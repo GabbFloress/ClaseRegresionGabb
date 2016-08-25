@@ -1,0 +1,14 @@
+
+install.packages("XLConnect")
+require (XLConnect)
+
+wb<-loadWorkbook("C:Users/SALA-C22/Desktop/practica.xls",create=TRUE)
+
+createSheet(wb,name="SEXO")
+writeWorksheet(wb,tabla1,"SEXO",startRow=1, startCol=2, header=TRUE)
+
+createSheet(wb,name="COND. DE OCUP")
+writeWorksheet(wb,tabla1,"COND. DE OCUP",startRow=1, startCol=2, header=TRUE)
+
+createSheet(wb,name="POBLACION ACTIVA")
+
