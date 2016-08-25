@@ -1,3 +1,7 @@
 sociodem$CLASE3<-factor(sociodem$CLASE3,levels = c(1,2,3,4,5,6,7),labels =c("Ocupado Pleno","Ocupado Sin Pago","Ocupado Ausente con Nexo Laboral","Ocupado Ausente con Retorno Asegurado","Desocupados Iniciadores","Desocupados con Búsqueda","Desocupados Ausente sin Ingreso y Sin Nexo Laboral") )
 
 table(sociodem$CLASE3)
+
+
+
+....
