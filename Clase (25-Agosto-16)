@@ -1,0 +1,41 @@
+
+install.packages("XLConnect")
+require(XLConnect)
+
+wb<-loadWorkbook("C:/Users/SALA-C29/Desktop/",create=TRUE)
+createSheet(wb,name="SEXO")
+
+writeWorksheet(wb,name="CONDICION DE OCUPACION")
+writeWorksheet(wb,tabla2,"CONDICION DE OCUPACION",startRow=1,startCol=2,header=TRUE)
+createSheet(wb,name="POBLACION ACTIVA")
+
+
+require (foreign)
+sdemt<-read.dbf("C:\\Users\\SALA-C29\\Desktop\\SDEMT215.dbf")
+
+install.packages("questionr")
+require(questionr)
+
+SDEMT215$ENT <- as.numeric(SDEMT215$ENT)
+wtd.table(SDEMT215$POS_OCU,SDEMT215$SEX,SDEMT215$ENT==25)
+wtd.table(SDEMT215$POS_OCU,SDEMT215$SEX,SDEMT215$ENT==32)
+
+SDEMT215$SEXO<-factor(SDEMT215$SEX,levels = c(1,2),labels = c("Hombre","Mujer"))
+class(SDEMT215$POS_OCU)
+class(SDEMT215$SEX)
+
+SDEMT215$POS_OCU <- as.factor(SDEMT215$POS_OCU)
+SDEMT215$POS_OCU<-factor(SDEMT215$POS_OCU,levels = c(1,2,3,4,5),labels = c("subordinados y remunerados","Empleadores", "cuenta propia", "Sin pago", "NE"))
+wtd.table(SDEMT215$POS_OCU,SDEMT215$SEX,SDEMT215$ENT==25)
+wtd.table(SDEMT215$POS_OCU,SDEMT215$SEX,SDEMT215$ENT==32)
+
+entidad <- subset(SDEMT215,SDEMT215$ENT == 25)
+entidad1 <- subset(SDEMT215,SDEMT215$ENT == 32)
+
+
+entidad3 <- subset(entidad,entidad$ENT == "25" | entidad1$CD_A == "32" ) 
+
+
+
+
+
