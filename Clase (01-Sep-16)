@@ -1,0 +1,66 @@
+##estaturas 1.2, 1.23, 1.19, 1.32, 1.28, 1.22, 1.17, 1.29, 1.33, 1.15
+ ### Nivel económico 110, 130, 108, 167, 156, 115, 104, 138, 170, 107
+
+
+##Queremos comprobar la hipótesis que entre mayoringreso de la familia hay una mayor estatura
+
+
+estat <- c(1.2, 1.23, 1.19, 1.32, 1.28, 1.22, 1.17, 1.29, 1.33, 1.15)
+
+nivel <- c(110, 130, 108, 167, 156, 115, 104, 138, 170, 107)
+
+#graficar, pch es tipo de punto o marca
+
+plot (nivel,estat, pch = 17, xlab = "nivel económico", ylab = "estatura", main = "Gráfica de dispersión",col = "red")
+
+#Calcular coeficiente de correlación
+
+cor(nivel,estat, method = "pearson")
+help("cor")
+
+# La forma de cor() es:
+
+##Argumentos
+#1. variable dependiente
+#2. variable independiente
+#3. método de correlación
+
+####El resultado es 0.9567263, lo que quiere decir que tiene una relación muy alta y positiva###
+
+#una vez que tenemos la idea que hay una buena relación de variables hay que confirmarla
+
+##función cor.test()
+
+#la prueba de hipótesis para esta función es H0 = r = 0
+#es decir que no hay relación, HA != 0 si relación
+
+cor.test(nivel,estat,method = "pearson")
+
+
+#si p-value es menor a .05 rechazamos HO
+# por lo tanto aceptamos la HA con un 95% de confianza
+
+##Ya que confirmamos el modelo para aplicar el modelo se utiliza lm()
+
+mod1 <- lm(estat~nivel)
+summary (mod1)
+
+
+##Los *** indican que son fuertemente significativos
+
+#Los residuales nos generan las diferencias entre los valores ajustados y los reales
+#en los resultados tenemos los coeficientes que contienen que expone si los coeficientes
+#son significativos
+
+#para mostrar la recta que ajusta tu modelo en la gráfica se utiliza abline()
+
+abline(mod1)
+
+names (mod1)
+
+#Genera los valores de beta 0 y beta 1 de la ecuación Y=B0 + B1X
+
+mod1$coefficients
+
+estat = 0.932369238 + 0.002341998 nivel
+##
