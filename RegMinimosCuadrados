@@ -1,0 +1,30 @@
+Ingreso <- c(39,43,21,64,57,47,28,75,34,52)
+
+Primer <- c(65,78,52,82,92,89,73,98,56,75)
+
+#Graficar
+
+plot (Primer,Ingreso, pch = 17, xlab = "Examen Ingreso", ylab = "Primer Semestre", main = "Gráfica de dispersión",col = "red")
+
+mod <- lm(Ingreso~Primer)
+summary (mod)
+abline(mod)
+
+n<-c(length(Ingreso))
+Xcuadrada<-c(Ingreso^2)
+Ycuadrada<-c(Primer^2)
+XY<-c(Ingreso*Primer)
+Xmedia<-c(mean(Ingreso,na.rm=FALSE))
+Ymedia<-c(mean(Primer,na.rm=FALSE))
+
+Sxy<-((sum(XY))-(sum((Ingreso*(sum(Primer)))/n)))
+
+Sxx<-c((sum(Xcuadrada))-(((sum(Ingreso))^2)/n))
+
+Beta1<-c(Sxy/Sxx)
+
+Beta0<-c(Ymedia-(Beta1*Xmedia))
+
+Beta0
+Beta1
+cor(Primer,Ingreso, method = "pearson")
