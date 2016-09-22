@@ -1,0 +1,82 @@
+install.packages("car")
+
+base1<-data.frame(eco,esta)
+View(base1)
+
+base1$ajuste.mod1<-fitted(mod1) #Valores ajustados
+base1$residuales.mod1<-residuals(mod1) # residuos del modelo (Y- Y ajustada)
+base1$rstudent.mod1<-rstudent(mod1) # residuos estandarizados
+
+View(base1)
+
+# Estas variables se utilizan para comprobar los supustos..
+## supuesto de normalidad... es que los residuos tengan una distribución normal
+# para conocer la normalidad se utiliza la prueba shapiro para analizar los residuos
+
+shapiro.test(base1$rstudent.mod1)
+
+##Prueba shapiro
+#Ho:la muestra tiene distribución normal
+#H1: la muestra no tiene distribución normal
+
+#Tenemos un pvalue de .8172 -> no se rechaza Ho
+# por lo tanto hay normalidad
+
+#Resultado gráfico
+
+qqnorm (base1$rstudent.mod1, main = "Normal (0,1)")
+
+qqline (base1$rstudent.mod1)
+
+
+#Prueba de Breussch 
+install.packages("lmtest")
+require (lmtest)
+bptest (mod1)
+
+# en esta prueba esperamos que haya homogeneidad de la varianza
+#Ho: si hay homogeneidad en las varianzas
+#Ha: no hay homogeneidad en las varianzas
+
+#En la prueba el pvalue es .6108
+#Por lo tanto rechazamos la hipótesis nula 
+# es decir se acepta con un 95% de confianza Ho
+# para eso tenemos que tener un pvalue mayor a .05
+# se puede decir que en mod1 hay homogeneidad en las varianzas
+
+#Prueba de autocorrelación o independencia
+# Se utiliza la prueba de Durbin Watson
+
+require(car)
+dwtest(mod1, alternative = "two.sided")
+
+#Ho: hay autocorrelación en los residuos
+#Ha: no hay correlación en los residuos
+# La prueba Durbin Watson genera un resultado de .9142
+#por lo tanto no se rechaza Ho
+# entonces no hay autocorrelación en los residuos
+
+#OTRA forma de evaluar la prueba Durbin Watson es con el valor DW
+# que se espera que esté en el rango de 1.5 2.5
+#si está dentro del rango se puede deci que no hay
+#autocorrelación en los residuos
+# Comprobamos de manera gráfica
+plot(base1$residuales.mod1, pch=17, col=2 , ylab="residuales",xlab="in") 
+abline(h=cor(base1$esta, base1$eco))
+
+
+#Ya podemos predecir o analizar los coeficientes
+
+#Definir una nueva base con los límites
+limbase1<- seq(min(base1$eco), max (base1$eco), length = 10)
+limbase1 <- data.frame(limbase1)
+limbasep <- predict.lm(mod1, limbase1, interval = "prediction",se.fit = TRUE, data = base1)
+
+head (limbasep$fit) #Genera los límites para dibujar los límites
+
+#Para graficar los límites
+
+matplot(limbase1, limbasep$fit, type = "l", xlab = "ingreso", ylab = "estatura")
+
+
+
