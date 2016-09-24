@@ -1,0 +1,58 @@
+rm(list = ls())
+
+install.packages("foreign")
+require("foreign")
+sdemt216 <- read.dbf("C://Users//FLORES//Desktop//sdemt216.dbf")
+
+colima <- subset(sdemt216,sdemt216$ENT == "08")
+
+colima$HRSOCUP  <- as.numeric(colima$HRSOCUP)
+HorasTrabajadas <- c(colima$HRSOCUP)
+
+colima$INGOCUP <- as.numeric(colima$INGOCUP)
+Ingreso <- c(colima$INGOCUP)
+
+
+################ Grafico de dispersiÓn ################
+
+plot (HorasTrabajadas, Ingreso, pch= 17, xlab="Horas Trabajadas por Semana", 
+      ylab="Ingreso mensual", main="Grafico de dispersión", col="red")
+
+################### Correlaciones ################### 
+
+### cor() ###
+
+#si p-value es menor a .05 rechazamos Ho
+#por lo tanto aceptamos la Ha con un 95% de confianza
+
+# p-value es igual a 0.04288703265
+# por lo tanto con un nivel de confianza del 95%
+# podemos decir que si hay relación en los datos
+
+cor(HorasTrabajadas, Ingreso, method="pearson")
+
+#### El resultado es .5163328, lo que quiere decir que tiene 
+### una relación moderada relación y positiva 
+
+### cor.test() ###
+
+#la prueba de hipótesis para esta función es Ho = r = 0
+#es decir que no hay relación, 
+#Ha r != 0 si relación
+
+cor.test(HorasTrabajadas, Ingreso, method="pearson")
+
+# p-value es igual a 2.2e-16 (un valor muy cercano a cero)
+# por lo tanto con un nivel de confianza del 95%
+# podemos decir que... Entonces, ¿Se rechaza Ho o no?
+
+##Ya que confirmamos el modelo para aplicar el modelo se utiliza lm()
+
+mod <- lm(Ingreso~HorasTrabajadas)
+summary (mod)
+
+##Los *** indican que son fuertemente significativos
+
+# Recta que ajusta el modelo en la gráfica se utiliza abline()
+
+abline(mod, col= "blue")
