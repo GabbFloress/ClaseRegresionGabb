@@ -1,0 +1,168 @@
+rm(list = ls())
+
+install.packages("foreign")
+require("foreign")
+sdemt216 <- read.dbf("C://Users//FLORES//Desktop//sdemt216.dbf")
+
+colima <- subset(sdemt216,sdemt216$ENT == "08")
+
+colima$HRSOCUP  <- as.numeric(colima$HRSOCUP)
+HorasTrabajadas <- c(colima$HRSOCUP)
+
+colima$INGOCUP <- as.numeric(colima$INGOCUP)
+Ingreso <- c(colima$INGOCUP)
+
+
+################ Grafico de dispersiÓn ################
+
+plot (HorasTrabajadas, Ingreso, pch= 17, xlab="Horas Trabajadas por Semana", 
+      ylab="Ingreso Mensual", main="Grafico de dispersión", col="red")
+
+
+
+####################### Correlaciones ###################### 
+
+                ### cor() ###
+
+#si p-value es menor a .05 rechazamos Ho
+#por lo tanto aceptamos la Ha con un 95% de confianza
+
+# p-value es igual a 0.04288703265
+# por lo tanto con un nivel de confianza del 95%
+# podemos decir que si hay relación en los datos
+
+cor(HorasTrabajadas, Ingreso, method="pearson")
+
+#### El resultado es .5163328, lo que quiere decir que tiene 
+### una relación moderada relación y positiva 
+
+             ### cor.test() ###
+
+#la prueba de hipótesis para esta función es Ho = r = 0
+#es decir que no hay relación, 
+#Ha r != 0 si relación
+
+cor.test(HorasTrabajadas, Ingreso, method="pearson")
+
+# p-value es igual a 2.2e-16 (un valor muy cercano a cero)
+# por lo tanto con un nivel de confianza del 95%
+# podemos decir que... Entonces, ¿Se rechaza Ho o no?
+
+##Ya que confirmamos el modelo para aplicar el modelo se utiliza lm()
+
+mod <- lm(Ingreso~HorasTrabajadas)
+summary (mod)
+
+##Los *** indican que son fuertemente significativos
+
+# Recta que ajusta el modelo en la gráfica se utiliza abline()
+
+abline(mod, col= "blue")
+
+names (mod)
+mod$coefficients
+
+summary(mod)$coefficients
+
+
+### Calcular Intervalo de confianza ###
+
+confint (mod,level=.95)
+
+### Interpretación: 
+#Con una probabilidad de 95% Bo se encuentra en el intervalo (.8542,.0029) 
+#y B1 se encuentra en el intervalo (.0017,.0029)
+
+################### La tabla anova  ###################
+
+anova(mod)
+
+##### Supuestos  ####
+
+install.packages("car")
+base<- data.frame(HorasTrabajadas,Ingreso)
+
+# Valores ajustados
+base$fitted.mod <- fitted(mod)
+# residuos del modelo (Y- Y ajustada)
+base$residuals.mod <- residuals(mod)
+# residuos estandarizados
+base$rstudent.mod <- rstudent(mod)
+
+View(base)
+
+##Prueba shapiro
+
+#Ho:la muestra tiene distribución normal
+#H1: la muestra no tiene distribución normal
+
+shapiro.test(base$rstudent.mod)
+
+
+######### Resultado gráfico #########
+
+qqnorm (base$rstudent.mod, main = "Normal (0,1)")
+
+qqline (base$rstudent.mod)
+
+######### Prueba de Breussch ######### 
+
+install.packages("lmtest")
+require (lmtest)
+
+
+##### Prueba de homogeneidad en las varianzas ##### 
+
+# Ho: si hay homogeneidad en las varianzas
+# Ha: no hay homogeneidad en las varianzas
+
+bptest (mod)
+
+#En la prueba el pvalue es 1.109e-07
+#Por lo tanto rechazamos la hipótesis nula 
+# es decir se acepta con un 95% de confianza Ha
+# porque tenemos un pvalue menor a .05
+# se puede decir que en mod no hay homogeneidad en las varianzas
+
+
+##### Prueba de autocorrelación o independencia# #### 
+### Prueba Durbin Watson ###
+
+require(car)
+
+#Ho: Hay autocorrelación en los residuos
+#Ha: No hay correlación en los residuos
+
+dwtest(mod, alternative = "two.sided")
+
+# La prueba Durbin Watson genera un p-value de 2.2e-16
+# La prueba genera un p-value de 2.2e-16, 
+# por lo que se rechaza la hipótesis nula
+# debido a que tenemos un p-value<0.05
+# No hay correlación en los residuos
+
+
+## El valor DW es igual a 1.7768
+# ya que el valor se encuentra en el rango de 1.5 a 2.5
+# No hay autocorrelación en los residuos
+
+#### Comprobamos de manera gráfica ####
+
+plot(base$residuals.mod, pch=17, col=2 , ylab="Residuales",xlab="in") 
+
+abline(h=cor(base$Ingreso, base$HorasTrabajadas))
+
+#Ya podemos predecir o analizar los coeficientes
+
+#Definir una nueva base con los límites
+
+limbase<- seq(min(base$HorasTrabajadas), max (base$HorasTrabajadas), length = 11514)
+limbase <- data.frame(limbase)
+limbasep <- predict.lm(mod, limbase, interval = "prediction",se.fit = TRUE, data = base)
+
+# Generar los límites 
+head (limbasep$fit)
+
+matplot(limbase,limbasep$fit,type = "l",xlab = "Horas Trabajadas",ylab = "Ingreso")
+
+
