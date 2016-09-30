@@ -1,0 +1,70 @@
+#### Modelo de Regresión múltiple
+
+rm(list = ls())
+capa <- c(4330, 5500, 5500, 4700, 5200, 5500, 4700, 5500, 5800, 5000)  ## independiente (x2)
+calidad <- c(2, 3, 4, 3, 4, 4, 4, 5, 5, 5) ## independiente (x1)
+precio <- c(190, 219, 249, 249, 250, 340, 289, 395, 439, 525) ## dependiente (y)
+
+mochila <- data.frame(precio, capa, calidad)
+
+# Primero aplicamos una correlación
+
+cor (mochila, use = "everything", method = "pearson")
+
+#Más cercano a 1 es porque tiene alta relación
+
+# Observamos que la variable tiene correlaciones diversas
+
+#### Aplicamos el modelo
+
+mod <- lm(precio~calidad+capa)
+summary(mod)
+
+
+# Se revisa la R2 ajustada por ser un MRM tenemos una R2 ajustada de 0.704 lo que implica 
+# que la recta de regresión  explica en 70% la variabilidad del modelo
+#revisando el valor F y p-value tenemos que si cumple con los criterios de un buen ajuste
+# (F>1 y p-value < 0.05)
+
+# con estos datos podemos mencionar que estamos ante un buen modelo por lo que se pasa al diagnóstico
+# el diagnóstico se realiza para poder generalizar los resultados del modelo a partir de la revisión de los supuestos
+
+# Lo primero que se hace en un MRM es observar gráficamente los supuestos
+
+plot(mod, which = 1, pch = 17) #which es el argumento de los supuestos
+
+# aquí esperamos que los residuos se distribuyan sin patrón con una tendencia en la variabilidad de los residuos 
+# sugiere que la varianza está relacionada con la media, violando el supuesto de varianza constante
+
+plot(mod, which = 2, pch = 17)
+
+# en este caso esperamos que los residuos tipificados alrededor de la línea se observa 
+#que si hay distribucuión normal
+
+plot(mod, which = 3, pch =17)
+
+
+# aquí podemos ver si los residuos se distribuyen constantes en los valores ajustados
+# una gráfica sin patrón observable
+
+plot (mod, which = 5, pch = 17)
+
+# expone la importancia de cada observación en el modelo en esta distancia el gráfico nos muestra
+# las observaciones que podrán impactar en el modelo,
+# por lo que se sugiere eliminarlas
+
+#se sugiere eliminar los datos más cercano a las líneas 1 y .5
+
+#nueva variable <- variable [c(renglones),c(columnas)]
+# si es un elemento no se pone c
+# se puede poner [1:3] para eliminar del 1 al 3
+
+# eliminamos 
+
+mochilita <- mochila[c(-1, -7, -10),]
+
+cor (mochilita, use = "everything", method = "pearson")
+help(lm)
+
+# la relación entre las variables aumenta
+
