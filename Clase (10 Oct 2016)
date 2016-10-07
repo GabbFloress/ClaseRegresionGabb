@@ -1,0 +1,205 @@
+#### Modelo de Regresión múltiple
+
+rm(list = ls())
+capa <- c(4330, 5500, 5500, 4700, 5200, 5500, 4700, 5500, 5800, 5000)  ## independiente (x2)
+calidad <- c(2, 3, 4, 3, 4, 4, 4, 5, 5, 5) ## independiente (x1)
+precio <- c(190, 219, 249, 249, 250, 340, 289, 395, 439, 525) ## dependiente (y)
+
+mochila <- data.frame(precio, capa, calidad)
+
+# Primero aplicamos una correlación
+
+cor (mochila, use = "everything", method = "pearson")
+
+#Más cercano a 1 es porque tiene alta relación
+
+# Observamos que la variable tiene correlaciones diversas
+
+#### Aplicamos el modelo
+
+mod <- lm(precio~calidad+capa)
+summary(mod)
+
+#################
+
+# Después de analizar gráficamente se aplican pruebas para confirmar que el MRM
+# cumple con los supuestos.
+#Para aplocar estas pruebas se generan los valores ajustados, residuales y los estandarizados
+
+
+mochila$ajustados <- fitted(mod)
+mochila$residuals <- residuals(mod)
+
+View(mochila) # los residuales no son cercanos a 0
+
+mochila$rstudent <- rstudent(mod)
+
+##### Prueba de normalidad ######
+
+install.packages("lmtest")
+require (lmtest)
+
+ks.test (mochila$rstudent, "pnorm") 
+
+# Se plantea una prueba de hipótesis y se espera un p-value mayor a 0.05
+# Si tenemos un p-value mayor a .05 NO se rechaza Ho y se dice que hay normalidad
+
+# En este caso el p-value es igual a .7974 por lo que el modelo 
+#pasa la prueba de normalidad
+
+
+###### Prueba de homogeneidad de varianzas con la función bptest
+
+bptest(mod, studentize = FALSE, data = mochila)
+
+
+# Como p-value (.493) es mayor que 0.05 pasa la prueba de homogeneidad de varianzas
+
+###### Prueba de autocorrelación Durbin Watson
+
+dwtest(mod, alternative = "two.sided", data = mochila)
+
+#  En esta prueba hay dos formas para comprobar:
+
+# 1) p-value mayor a .05
+# 2) el valor DW se encuentra entre 1.5 y 2.5
+
+# En este caso DW = 1.8684, p-value = 0.6433
+# Por lo que se concluye que no hay autocorrelación ó 
+# hay independencia entre los errores
+
+
+# Con estas pruebas ya se confirma que tenemos un modelo con buen ajuste
+# Sin embargo, hay que revisar los casos atípicos
+
+
+install.packages("car")
+require (car)
+
+outlierTest (mod)
+outlier.test (mod)
+
+#Una vez que observamos los casos atípicos, procedemos a conocer
+# la influencia de estos casos
+
+influencia <- influence.measures(mod)
+summary(influencia)
+
+# En la primera columna se observa los casos con mayor influencia
+# Para este modelo son 1, 2 y 10
+# Las columnas de dbf nos indican lla influencia en los coeficientes del modelo
+# las columnas que nos presentan mayor interés son las cook.d y hat, que nos exponen
+# con mayor claridad la influencia
+# el cook.d es la distancia, mientras más cercano a 1 hay mayor influencia
+# La observación 10 es la que tiene mayor distancia de cook.
+
+
+#### Función influenceplot ()
+## El análisis de este gráfico se realiza con base en el tamaño de las circunferecnias
+# que arroja, es decir, a mayor circunferencia el caso tiene mayor influencia
+
+influenceplot(mod)
+
+## Gráfica de distancia de cook
+
+install.packages("faraway")
+require(faraway)
+dc <- cooks.distance(mod)
+
+etiqueta <- row.names(mochila)
+
+halfnorm(dc, 3, etiqueta)
+
+plot( capa, precio, pch=17, xlab="Capacidad", ylab="precio", main = "Gráfica de Dispersión", col="red")
+
+cor(precio, calidad, method = "pearson")
+cor.test(precio, calidad, method = "pearson")
+
+## Comparacion de modelos
+
+# Pretendemos seleccionar el mejor subconjunto de variables independientes
+# en este caso para la aplicación del MRM tenemos 2 variables independientes (calidad y capacidad)
+# comparar 3 modelos con la finalidad de aplicar el principio de parsomonia, evitar multicolinealidad
+# Ante estas variables se pueden comparar 3 modelos
+# 1. Precio ~ capacidad
+# 2. precio ~ calidad
+# 3. precio ~ calidad + capacidad
+
+### ¿Cómo seleccionamos el mejor modelo?
+
+# Criterio de información de Akaike (AIC)
+
+# El problema de utilizar R cuadrada para comparar modelos es que al introducir
+# nuevas variables al modelo, esta medida siempre crece
+
+# El modelo con más variables independientes siempre será el mejor ajustado
+
+# Método step by step 
+
+# para comparar modelos hay 3 modalidades
+# 1, Forward: comienza de Bo y va probando las variables para ver cual aporta más al modelo
+# 2. Backward: empieza con todas las variables y estudia al AIC, bajo cuando hay cambios de variables
+# 3. Both: empieza como el forward, la diferencia es que se realizan test para conocer la variable indep. menos útil
+
+
+#### calculando  con el modelo 2 var. indep
+
+mochila <- data.frame(precio, capa, calidad)
+cor (mochila, use = "everything", method = "pearson")
+mod <- lm(precio ~ capa + calidad, data = mochila)
+summary(mod)
+
+
+# Median no es cercano a cero :/
+# el p.value es menor a .05
+
+step (mod, direction = "backward")
+# el modelo capa + calidad = 83.9
+# el modelo calidad =83.51
+
+# es mejor el modelo calidad (con menos variables)
+
+
+step (mod, direction = "both")
+
+#El resultado es igual porque son pocas variables
+
+
+step (mod, direction = "forward")
+
+# Sólo se queda con el más complejo, y dice que es el mejor
+
+
+####################################
+
+
+mod1 <- lm(precio ~ calidad, data = mochila)
+summary(mod1)
+
+# aplicar los supuestos para ver si temos un buen modelo
+
+mochila$ajustado <- fitted(mod1)
+mochila$residuals <- residuals(mod1)
+mochila$rstudent <- rstudent(mod1)
+
+# Ahora probamos los supuestos de normalidad
+install.packages("lmtest")
+require (lmtest)
+ks.test(mochila$rstudent, "pnorm")
+
+#Histograma
+hist(mochila$rstudent, xlab= "residuales", main = "Histograma residuales")
+
+## El p-value para el contraste de normalidad es mayor que .05 (p=.9719) y además
+# el histograma se parece a una distribucuión normal
+# (curva en forma campana) entonces no hay problemas de normalidad
+# Homogeneidad de varianzas
+bptest(mod1, studentsize = FALSE, data = mochila)
+
+# Significancia p= .4154 mayor de .05, por lo que podemos decir
+# que la varianza es constante a lo largo de la muestra
+
+dwtest(mod1, alternative = "two.sided", data = mochila)
+
+# aceptamos la hipótesis nula que no existe correlación entre los residuos
+# con un p-value superior a .05 (p-value = 0.2976)
