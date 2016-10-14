@@ -21,8 +21,8 @@ base <- subset (sdemt, (sdemt$ENT == "08") & (sdemt$EDA >= 15) & (sdemt$EDA <= 6
 base <- na.omit(base)
 
 
-var<-c("EDA","SEX","INGOCUP","HRSOCUP","ANIOS_ESC")
-base2<-base[,var]
+nombres <- c("EDA","SEX","INGOCUP","HRSOCUP","ANIOS_ESC")
+base2 <- base[,nombres]
 
 base2$INGOCUP<-as.numeric(base2$INGOCUP)
 base2$SEX<-as.numeric(base2$SEX)
