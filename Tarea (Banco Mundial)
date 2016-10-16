@@ -180,3 +180,192 @@ rownames(Brasil) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2
 
 BrasilModif <- Brasil[c(-1,-10,-11),]
 
+############################################################
+#                    ANÁLISIS MÉXICO                       
+
+install.packages("lmtest")
+require (lmtest)
+
+plot(Mexico, main = "Gráfica de dispersión México", pch=17, col="red")
+
+cor (Mexico, use ="everything", method="pearson")
+
+## 1) plantear la ecuacion estimada original
+
+      modeloM <- lm(evfM~tmiM+tgfM+alfhM+alfmM+urbM+pibM+nac_defM+crecM, data = Mexico)
+
+      summary (modeloM)
+
+      #Obtenemos la ecuación
+      # evfM = -3.378e+02 - 1.360e-02 tmiM + 1.054e+00 tgfM +3.791e-04 alfhM + 6.734e-03 alfmM 
+      # + 4.623e+00 urbM - 1.622e-05 pibM + 1.260e+01 nac_defM -1.895e-01 crecM
+
+    #Adjusted R-squared:      1 
+    #F-statistic: 2.712e+05 (402.49) cumple que el supuesto de que F>1
+    #p-value: 0.001485 cumple el supuesto p-value menor a .05
+ 
+
+## 2) analizar la anova, r cuadrada, estadistico F (mediante p.h.)
+
+      anova (modeloM)
+   
+     # Podemos observar que en las variables alfhM, urbM y crecM  F value no es mayor a 1 y que  Pr (F) no es menor a .05
+     # por lo tanto estas variables no son significativas para el modelo
+      
+      modeloM2 <- lm(evfM~tmiM+tgfM+alfmM+pibM+nac_defM, data = Mexico)
+      
+      summary (modeloM2)
+      
+      anova(modeloM2)
+      #Adjusted R-squared:      .9998 
+      #F-statistic: 7369 cumple que el supuesto de que F>1
+      #p-value: 0.0017293098 cumple el supuesto p-value menor a .05
+
+
+
+      #comparando los modelos
+      
+      step(modeloM, direction = "backward")
+      #Step:  AIC=-145.51
+      step(modeloM2, direction = "backward")
+      #Step:  AIC=-96.57
+      
+      #El ModeloM2 es mejor
+ 
+      modeloM2$ajustados<-fitted(modeloM2)
+      modeloM2$reiduals<-residuals(modeloM2)
+      show(modeloM2)
+      modeloM2$rstudent<-rstudent(modeloM2)     
+      
+
+  ###### Prueba de Normalidad
+      ks.test(modeloM2$rstudent,"pnorm")
+      # D = 0.2274, p-value = 0.6026
+  
+      # Se plantea una prueba de hipótesis y se espera un p-value mayor a 0.05
+      # Si tenemos un p-value mayor a .05 NO se rechaza Ho y se dice que hay normalidad
+      # En este caso el p-value es igual a .6026 por lo que el modelo 
+      #pasa la prueba de normalidad
+  
+  ###### Prueba de homogeneidad de varianzas 
+  
+  bptest(modeloM2, studentize = FALSE, data = Mexico)
+  # Como p-value (.8572) es mayor que 0.05 pasa la prueba de homogeneidad de varianzas
+  
+  ###### Prueba de autocorrelación Durbin Watson
+  
+  dwtest(modeloM2, alternative = "two.sided", data = Mexico)
+  
+  # En esta prueba hay dos formas para comprobar:
+  
+  # 1) p-value mayor a .05
+  # 2) el valor DW se encuentra entre 1.5 y 2.5
+  
+  # En este caso DW = 2.4675, p-value = 0.2902
+  # Por lo que se concluye que no hay autocorrelación ó 
+  # hay independencia entre los errores
+  
+  
+  ############################################################
+  #                    ANÁLISIS ARGENTINA 
+  
+  plot(Argentina, main = "Gráfica de dispersión Argentina", pch=17, col="red")
+  
+  cor (Argentina, use ="everything", method="pearson")
+  
+  ## 1) plantear la ecuacion estimada original
+  
+  modeloA <- lm(evfA~tmiA+tgfA+alfhA+alfmA+urbA+pibA+nac_defA+crecA, data = Argentina)
+  
+  summary (modeloA)
+  
+ ## Datos insuficientes  
+ ## No es posible aplicar supuestos y pruebas
+  
+  ############################################################
+  #                    ANÁLISIS BRASIL 
+  
+  
+  plot(Brasil, main = "Gráfica de dispersión México", pch=17, col="red")
+  
+  cor (Brasil, use ="everything", method="pearson")
+  
+  ## 1) plantear la ecuacion estimada original
+  
+  modeloB <- lm(evfB~tmiB+tgfB+alfhB+alfmB+urbB+pibB+nac_defB+crecB, data = Brasil)
+  
+  summary (modeloB)
+  
+  #Obtenemos la ecuación
+  # evfB = -3.359e+01 + 1.281e-02 tmiB - 2.422e+00 tgfB + 1.032e-03 alfhB - 4.815e-03 alfmB 
+  # + 1.300e+00 urbB - 3.034e-06 pibB + 2.219e+00 nac_defB
+  
+  #Adjusted R-squared:      NaN 
+  #F-statistic: NaN 
+  #p-value: NaN
+  
+  
+  ## 2) analizar la anova, r cuadrada, estadistico F (mediante p.h.)
+  
+  anova (modeloB)
+  
+  # Suponemos nuevo modelo
+  
+  modeloB2 <- lm(evfB~tmiB+tgfB+alfmB+urbB+pibB+nac_defB, data = Brasil)
+  
+  summary (modeloB2)
+  
+  #Adjusted R-squared:  1 
+  #F-statistic: 7.217e+10 cumple que el supuesto de que F>1
+  #p-value: 2.849e-06 (.007061964) cumple el supuesto p-value menor a .05
+    
+  anova(modeloB2)
+  
+  
+  #comparando los modelos
+  
+  step(modeloB, direction = "backward")
+  #No se puede realizar
+  step(modeloB2, direction = "backward")
+  #Step:  AIC=-207.57
+  
+  #El ModeloB2 es mejor
+  
+  modeloB2$ajustados<-fitted(modeloB2)
+  modeloB2$reiduals<-residuals(modeloB2)
+  show(modeloB2)
+  modeloB2$rstudent<-rstudent(modeloB2)     
+  
+  
+  ###### Prueba de Normalidad
+  ks.test(modeloB2$rstudent,"pnorm")
+  # D = 0.34134, p-value = 0.3089
+  
+  # Se plantea una prueba de hipótesis y se espera un p-value mayor a 0.05
+  # Si tenemos un p-value mayor a .05 NO se rechaza Ho y se dice que hay normalidad
+  # En este caso el p-value es igual a .3089 por lo que el modelo 
+  #pasa la prueba de normalidad
+  
+  ###### Prueba de homogeneidad de varianzas 
+  
+  bptest(modeloB2, studentize = FALSE, data = Brasil)
+  #BP = 3.0692, df = 6, p-value = 0.8001
+  # Como p-value (.8001) es mayor que 0.05 pasa la prueba de homogeneidad de varianzas
+  
+  ###### Prueba de autocorrelación Durbin Watson
+  
+  dwtest(modeloB2, alternative = "two.sided", data = Brasil)
+  
+  # En esta prueba hay dos formas para comprobar:
+  
+  # 1) p-value mayor a .05
+  # 2) el valor DW se encuentra entre 1.5 y 2.5
+  
+  # En este caso DW = 2.7453, p-value < 2.2e-16 (.000000247)
+  # Por lo que se concluye que hay autocorrelación ó 
+  # hay dependencia entre los errores
+  
+  
+  ## EQUIPO: 
+  # HERNÁNDEZ FLORES LAURA GABRIELA
+  # JIMÉNEZ CALDERÓN LESLIE
