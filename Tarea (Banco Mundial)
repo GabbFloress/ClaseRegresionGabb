@@ -65,7 +65,7 @@ Mexico <- data.frame(evfM, tmiM, tgfM, alfhM, alfmM, urbM, pibM, nac_defM, crecM
 colnames(Mexico) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
 rownames(Mexico) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")
 
-
+MexicoModif <- Mexico[c(-11),]
 ##################### ARGENTINA ##########################
 
 arg <- data.frame(basearg$Indicator.Code, basearg$X2005, basearg$X2006, basearg$X2007, basearg$X2008, basearg$X2009, basearg$X2010, basearg$X2011, basearg$X2012, basearg$X2013, basearg$X2014, basearg$X2015)
@@ -120,6 +120,8 @@ Argentina <- data.frame(evfA, tmiA, tgfA, alfhA, alfmA, urbA, pibA, nac_defA, cr
 
 colnames(Argentina) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
 rownames(Argentina) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")
+
+ArgentinaModif <- Argentina[c(-11),c(-4,-5)]
 
 ##################### BRASIL ##########################
 
@@ -176,6 +178,5 @@ Brasil <- data.frame(evfB, tmiB, tgfB, alfhB, alfmB, urbB, pibB, nac_defB, crecB
 colnames(Brasil) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
 rownames(Brasil) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")
 
-
-
+BrasilModif <- Brasil[c(-1,-10,-11),]
 
