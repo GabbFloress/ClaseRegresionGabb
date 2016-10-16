@@ -1,0 +1,185 @@
+rm(list = ls())
+install.packages("foreing")
+require(foreign)
+install.packages("questionr")
+require(questionr)
+
+wti <- read.csv ("C://Users//FLORES//Desktop//WDI_Data.csv")
+
+basemex <- subset(wti,wti$Country.Code == "MEX")
+basearg <- subset(wti,wti$Country.Code =="ARG")
+basebra <- subset(wti,wti$Country.Code =="BRA")
+
+##################### MÉXICO ##########################
+
+mex <- data.frame(basemex$Indicator.Code, basemex$X2005, basemex$X2006, basemex$X2007, basemex$X2008, basemex$X2009, basemex$X2010, basemex$X2011, basemex$X2012, basemex$X2013, basemex$X2014)
+#No utilizamos 2015 porque no existían datos en algunos indicadores
+
+#Esperanza vida femenina
+ evfM <- subset(mex,mex$basemex.Indicator.Code=="SP.DYN.LE00.FE.IN")
+ evfM <- evfM[,c(-1)]
+ evfM <- t(evfM)
+#TMI                
+ tmiM <- subset(mex,mex$basemex.Indicator.Code=="SP.DYN.IMRT.IN")
+ tmiM <- tmiM[,c(-1)]
+ tmiM <- t(tmiM)
+#Tasa global de fecundidad
+ tgfM <- subset(mex,mex$basemex.Indicator.Code=="SP.DYN.TFRT.IN")
+ tgfM <- tgfM[,c(-1)]
+ tgfM <- t(tgfM)
+#Hombres alfabetas
+ alfhM <- subset(mex,mex$basemex.Indicator.Code=="SE.ADT.LITR.MA.ZS")
+ alfhM <- alfhM[,c(-1)]
+ alfhM <- t(alfhM)
+#Mujeres alfabetas
+ alfmM <- subset(mex,mex$basemex.Indicator.Code=="SE.ADT.LITR.FE.ZS")
+ alfmM <- alfmM[,c(-1)]
+ alfmM <- t(alfmM)
+#Población urbana
+ urbM <- subset(mex,mex$basemex.Indicator.Code=="SP.URB.TOTL.IN.ZS")
+ urbM <- urbM[,c(-1)]
+ urbM <- t(urbM)
+#PIB percápita
+ pibM <- subset(mex,mex$basemex.Indicator.Code=="NY.GDP.PCAP.KD")
+ pibM <- pibM[,c(-1)]
+ pibM <- t(pibM)
+  #Nacimientos
+   nacM <- subset(mex,mex$basemex.Indicator.Code=="SP.DYN.CBRT.IN")
+   nacimM<-nacM[,c(-1)]
+   nacimientosM<-data.frame(nacimM)
+  #Defunciones
+   defM <- subset(mex,mex$basemex.Indicator.Code=="SP.DYN.CDRT.IN")
+   defuM<- defM[,c(-1)]
+   defuncionesM<-data.frame(defuM)
+#Relación nacimientos defunciones
+ nac_defM <- c(nacimientosM/defuncionesM)
+ nac_defM <- data.frame(nac_defM)
+ nac_defM <- t(nac_defM)
+#Tasa de Crecimiento
+ crecM <- subset(mex,mex$basemex.Indicator.Code=="SP.POP.GROW")
+ crecM <- crecM[,c(-1)]
+ crecM <- t(crecM)
+
+Mexico <- data.frame(evfM, tmiM, tgfM, alfhM, alfmM, urbM, pibM, nac_defM, crecM)
+
+colnames(Mexico) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
+rownames(Mexico) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014")
+
+
+##################### ARGENTINA ##########################
+
+arg <- data.frame(basearg$Indicator.Code, basearg$X2005, basearg$X2006, basearg$X2007, basearg$X2008, basearg$X2009, basearg$X2010, basearg$X2011, basearg$X2012, basearg$X2013, basearg$X2014)
+#No utilizamos 2015 porque no existían datos en algunos indicadores
+
+#Esperanza vida femenina
+ evfA <- subset(arg,arg$basearg.Indicator.Code=="SP.DYN.LE00.FE.IN")
+ evfA <- evfA[,c(-1)]
+ evfA <- t(evfA)
+#TMI                
+ tmiA <- subset(arg,arg$basearg.Indicator.Code=="SP.DYN.IMRT.IN")
+ tmiA <- tmiA[,c(-1)]
+ tmiA <- t(tmiA)
+#Tasa global de fecundidad
+ tgfA <- subset(arg,arg$basearg.Indicator.Code=="SP.DYN.TFRT.IN")
+ tgfA <- tgfA[,c(-1)]
+ tgfA <- t(tgfA)
+#Hombres alfabetas
+ alfhA <- subset(arg,arg$basearg.Indicator.Code=="SE.ADT.LITR.MA.ZS")
+ alfhA <- alfhA[,c(-1)]
+ alfhA <- t(alfhA)
+#Mujeres alfabetas
+ alfmA <- subset(arg,arg$basearg.Indicator.Code=="SE.ADT.LITR.FE.ZS")
+ alfmA <- alfmA[,c(-1)]
+ alfmA <- t(alfmA)
+#Población urbana
+ urbA <- subset(arg,arg$basearg.Indicator.Code=="SP.URB.TOTL.IN.ZS")
+ urbA <- urbA[,c(-1)]
+ urbA <- t(urbA)
+#PIB percápita
+ pibA <- subset(arg,arg$basearg.Indicator.Code=="NY.GDP.PCAP.KD")
+ pibA <- pibA[,c(-1)]
+ pibA <- t(pibA)
+#Nacimientos
+ nacA <- subset(arg,arg$basearg.Indicator.Code=="SP.DYN.CBRT.IN")
+ nacimA<-nacA[,c(-1)]
+ nacimientosA<-data.frame(nacimA)
+#Defunciones
+ defA <- subset(arg,arg$basearg.Indicator.Code=="SP.DYN.CDRT.IN")
+ defuA<- defA[,c(-1)]
+ defuncionesA<-data.frame(defuA)
+#Relación nacimientos defunciones
+ nac_defA <- c(nacimientosA/defuncionesA)
+ nac_defA <- data.frame(nac_defA)
+ nac_defA <- t(nac_defA)
+#Tasa de Crecimiento
+ crecA <- subset(arg,arg$basearg.Indicator.Code=="SP.POP.GROW")
+ crecA <- crecA[,c(-1)]
+ crecA <- t(crecA)
+
+Argentina <- data.frame(evfA, tmiA, tgfA, alfhA, alfmA, urbA, pibA, nac_defA, crecA)
+
+colnames(Argentina) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
+rownames(Argentina) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014")
+
+##################### BRASIL ##########################
+
+bra <- data.frame(basebra$Indicator.Code, basebra$X2005, basebra$X2006, basebra$X2007, basebra$X2008, basebra$X2009, basebra$X2010, basebra$X2011, basebra$X2012, basebra$X2013, basebra$X2014)
+#No utilizamos 2015 porque no existían datos en algunos indicadores
+
+#Esperanza vida femenina
+ evfB <- subset(bra,bra$basebra.Indicator.Code=="SP.DYN.LE00.FE.IN")
+ evfB <- evfB[,c(-1)]
+ evfB <- t(evfB)
+#TMI                
+ tmiB <- subset(bra,bra$basebra.Indicator.Code=="SP.DYN.IMRT.IN")
+ tmiB <- tmiB[,c(-1)]
+ tmiB <- t(tmiB)
+#Tasa global de fecundidad
+ tgfB <- subset(bra,bra$basebra.Indicator.Code=="SP.DYN.TFRT.IN")
+ tgfB <- tgfB[,c(-1)]
+ tgfB <- t(tgfB)
+#Hombres alfabetas
+ alfhB <- subset(bra,bra$basebra.Indicator.Code=="SE.ADT.LITR.MA.ZS")
+ alfhB <- alfhB[,c(-1)]
+ alfhB <- t(alfhB)
+#Mujeres alfabetas
+ alfmB <- subset(bra,bra$basebra.Indicator.Code=="SE.ADT.LITR.FE.ZS")
+ alfmB <- alfmB[,c(-1)]
+ alfmB <- t(alfmB)
+#Población urbana
+ urbB <- subset(bra,bra$basebra.Indicator.Code=="SP.URB.TOTL.IN.ZS")
+ urbB <- urbB[,c(-1)]
+ urbB <- t(urbB)
+#PIB percápita
+ pibB <- subset(bra,bra$basebra.Indicator.Code=="NY.GDP.PCAP.KD")
+ pibB <- pibB[,c(-1)]
+ pibB <- t(pibB)
+#Nacimientos
+ nacB <- subset(bra,bra$basebra.Indicator.Code=="SP.DYN.CBRT.IN")
+ nacimB<-nacB[,c(-1)]
+ nacimientosB<-data.frame(nacimB)
+#Defunciones
+ defB <- subset(bra,bra$basebra.Indicator.Code=="SP.DYN.CDRT.IN")
+ defuB<- defB[,c(-1)]
+ defuncionesB<-data.frame(defuB)
+#Relación nacimientos defunciones
+ nac_defB <- c(nacimientosB/defuncionesB)
+ nac_defB <- data.frame(nac_defB)
+ nac_defB <- t(nac_defB)
+#Tasa de Crecimiento
+ crecB <- subset(bra,bra$basebra.Indicator.Code=="SP.POP.GROW")
+ crecB <- crecB[,c(-1)]
+ crecB <- t(crecB)
+
+Brasil <- data.frame(evfB, tmiB, tgfB, alfhB, alfmB, urbB, pibB, nac_defB, crecB)
+
+colnames(Argentina) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
+rownames(Argentina) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014")
+
+
+############################################################
+#                    ANÁLISIS MÉXICO                       #
+############################################################
+
+
+
