@@ -12,8 +12,8 @@ basebra <- subset(wti,wti$Country.Code =="BRA")
 
 ##################### MÉXICO ##########################
 
-mex <- data.frame(basemex$Indicator.Code, basemex$X2005, basemex$X2006, basemex$X2007, basemex$X2008, basemex$X2009, basemex$X2010, basemex$X2011, basemex$X2012, basemex$X2013, basemex$X2014)
-#No utilizamos 2015 porque no existían datos en algunos indicadores
+mex <- data.frame(basemex$Indicator.Code, basemex$X2005, basemex$X2006, basemex$X2007, basemex$X2008, basemex$X2009, basemex$X2010, basemex$X2011, basemex$X2012, basemex$X2013, basemex$X2014, basemex$X2015)
+
 
 #Esperanza vida femenina
  evfM <- subset(mex,mex$basemex.Indicator.Code=="SP.DYN.LE00.FE.IN")
@@ -63,12 +63,12 @@ mex <- data.frame(basemex$Indicator.Code, basemex$X2005, basemex$X2006, basemex$
 Mexico <- data.frame(evfM, tmiM, tgfM, alfhM, alfmM, urbM, pibM, nac_defM, crecM)
 
 colnames(Mexico) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
-rownames(Mexico) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014")
+rownames(Mexico) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")
 
 
 ##################### ARGENTINA ##########################
 
-arg <- data.frame(basearg$Indicator.Code, basearg$X2005, basearg$X2006, basearg$X2007, basearg$X2008, basearg$X2009, basearg$X2010, basearg$X2011, basearg$X2012, basearg$X2013, basearg$X2014)
+arg <- data.frame(basearg$Indicator.Code, basearg$X2005, basearg$X2006, basearg$X2007, basearg$X2008, basearg$X2009, basearg$X2010, basearg$X2011, basearg$X2012, basearg$X2013, basearg$X2014, basearg$X2015)
 #No utilizamos 2015 porque no existían datos en algunos indicadores
 
 #Esperanza vida femenina
@@ -119,11 +119,11 @@ arg <- data.frame(basearg$Indicator.Code, basearg$X2005, basearg$X2006, basearg$
 Argentina <- data.frame(evfA, tmiA, tgfA, alfhA, alfmA, urbA, pibA, nac_defA, crecA)
 
 colnames(Argentina) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
-rownames(Argentina) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014")
+rownames(Argentina) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")
 
 ##################### BRASIL ##########################
 
-bra <- data.frame(basebra$Indicator.Code, basebra$X2005, basebra$X2006, basebra$X2007, basebra$X2008, basebra$X2009, basebra$X2010, basebra$X2011, basebra$X2012, basebra$X2013, basebra$X2014)
+bra <- data.frame(basebra$Indicator.Code, basebra$X2005, basebra$X2006, basebra$X2007, basebra$X2008, basebra$X2009, basebra$X2010, basebra$X2011, basebra$X2012, basebra$X2013, basebra$X2014, basebra$X2015)
 #No utilizamos 2015 porque no existían datos en algunos indicadores
 
 #Esperanza vida femenina
@@ -173,13 +173,9 @@ bra <- data.frame(basebra$Indicator.Code, basebra$X2005, basebra$X2006, basebra$
 
 Brasil <- data.frame(evfB, tmiB, tgfB, alfhB, alfmB, urbB, pibB, nac_defB, crecB)
 
-colnames(Argentina) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
-rownames(Argentina) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014")
+colnames(Brasil) <- c("Esp_fem","TMI", "TGF","Alf_Hombres", "Alf_Mujeres", "Pob_Urbana", "PIB", "Nac_Def", "Crecim")
+rownames(Brasil) <- c("2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015")
 
-
-############################################################
-#                    ANÁLISIS MÉXICO                       #
-############################################################
 
 
 
