@@ -1,0 +1,31 @@
+install.packages("foreign")
+require(foreign)
+install.packages("questionr")
+require(questionr)
+
+setwd("C://Users//SALA-C29//Desktop")
+
+base <- data.frame(read.dbf("mti2013_05_17_sdem_precodificado.dbf"))
+
+wtd.table(base$SEX, weights = base$FAC_MTI)
+
+wtd.table(base$T_LOC, weights = base$FAC_MTI)
+
+wtd.table(base$T_LOC, base$CLASE2, weights = base$FAC_MTI)
+
+
+#Zona Rural
+
+class(base$T_LOC)
+
+base$Clase2 <- as.numeric(as.character(base$CLASE2))
+base$T_LOC <- as.numeric(as.character(base$T_LOC))
+base1 <- subset(base, base$CLASE2 == 1 & base$T_LOC == 4)
+
+wtd.table(base1$SEX, weights = base1$FAC_MTI)
+
+wtd.table(base1$T_LOC, weights = base1$FAC_MTI)
+
+wtd.table(base1$T_LOC, base1$CLASE2, weights = base1$FAC_MTI)
+
+
