@@ -1,0 +1,52 @@
+
+### Personas Ocupadas y No Ocupadas dado que estudiaron 
+### el Bachillerato en una escuela pública
+
+
+install.packages("foreign")
+install.packages("quesionr")
+require (questionr)
+require(foreign)
+
+setwd("C://Users//FLORES//Desktop")
+ENILEMS <- read.dbf("cbasico.dbf")
+
+
+#ls(ENILEMS)
+#ls(Publica)
+
+ENILEMS$P7 <- as.numeric(as.character(ENILEMS$P7))
+PUBLICA <- subset(ENILEMS, ENILEMS$P7 == 1)
+
+#wtd.table(PUBLICA$SEX, weights = PUBLICA$FAC)
+
+PUBLICA$SEX <- ifelse(PUBLICA$SEX == 1, "Hombres", "Mujeres")
+sexo <- data.frame(wtd.table(PUBLICA$SEX, weights = PUBLICA$FAC))
+
+g <- wtd.table(ENILEMS$P35, weights = ENILEMS$FAC)
+
+# El número 1: Si el seleccionado ENILEMS no es quien dio su información en la ENOE 
+
+
+# El número 2: Si el seleccionado ENILEMS dio su información en la ENOE y desde que
+#              salió del bachillerato ha tenido más
+#              de un trabajo y se definió OCUPADO en el COE
+
+# El número 3: Si el seleccionado ENILEMS dio su información en la ENOE y se definió
+#              NO OCUPADO en el COE
+
+# El número 4: Si el seleccionado de la ENILEMS dio su información en la ENOE y desde
+#              que salió del bachillerato sólo ha tenido
+#              un trabajo y se definió OCUPADO en el COE
+
+ENILEMS$P35 <- as.numeric(as.character(ENILEMS$P35))
+Ocu <- subset(ENILEMS, (ENILEMS$P35 == 2) | (ENILEMS$P35 == 3) | (ENILEMS$P35 == 4) )
+Ocu$P35 <- ifelse(Ocu$P35 == 2 | Ocu$P35 == 4 , "Ocupados", "No Ocupados")
+
+Ocupación <- data.frame(wtd.table(Ocu$P35, weights = Ocu$FAC))
+
+### Integrantes:
+### Hernández Flores Laura Gabriela
+### Jiménez Calderón Leslie
+
+
