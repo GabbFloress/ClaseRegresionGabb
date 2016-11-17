@@ -1,0 +1,44 @@
+
+install.packages("foreign")
+install.packages("quesionr")
+require (questionr)
+require(foreign)
+
+setwd("C://Users//SALA-C29//Desktop")
+rural <- data.frame(read.spss("solorural.sav"))
+
+
+rural$eda <- as.numeric(as.character(rural$eda))
+
+PorEdad <- data.frame(wtd.table(rural$sex, weights = rural$fac_mti))
+                      
+PorEdadMuestra <- data.frame(wtd.table(rural$sex))
+     
+rural$clase2 <- as.numeric(as.character(rural$clase2))
+
+Ocupados <- subset(rural, rural$clase2 == 1)
+
+Ocup <- data.frame(wtd.table(Ocupados$sex, weights = Ocupados$fac_mti))
+
+# Ocupados por grupos de edad
+
+Ocupados$eda <- as.numeric(as.character(Ocupados$eda))
+
+Ocupados$eda <- ifelse(Ocupados$eda >= 5 & Ocupados$eda <= 9, "5 a 9",
+                ifelse(Ocupados$eda >= 10 & Ocupados$eda <= 13, "10 a 13",
+                ifelse(Ocupados$eda >= 14 & Ocupados$eda <= 17, "14 a 17", "NA")))
+
+GruposEdad <- data.frame(wtd.table(Ocupados$eda, weights = Ocupados$fac_mti))
+
+# Ocupados según asistencia escolar
+
+AEscolar <- data.frame(wtd.table(Ocupados$asis, weights = Ocupados$fac_mti))
+
+# Características del hogar
+
+TamHog <- data.frame(wtd.table(Ocupados$tam_hog, weights = Ocupados$fac_mti))
+
+# Sexo del jefe del hogar
+
+JefeHog <- data.frame(wtd.table(Ocupados$sex_jefe, weights = Ocupados$fac_mti))
+
