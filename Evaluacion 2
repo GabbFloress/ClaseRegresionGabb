@@ -1,0 +1,107 @@
+
+install.packages("foreign")
+install.packages("quesionr")
+require (questionr)
+require(foreign)
+
+setwd("C://Users//SALA-C29//Desktop")
+rural <- data.frame(read.spss("solorural.sav"))
+
+
+#rural$eda <- as.numeric(as.character(rural$eda))
+
+#PorEdad <- data.frame(wtd.table(rural$sex, weights = rural$fac_mti))
+                      
+#PorEdadMuestra <- data.frame(wtd.table(rural$sex))
+     
+#rural$clase2 <- as.numeric(as.character(rural$clase2))
+
+##### Sólo ocupados
+
+Ocupados <- subset(rural, rural$c_ocu == "ocupado")
+
+
+# Sexo de los ocupados
+
+OcupSex <- data.frame(wtd.table(Ocupados$sex, weights = Ocupados$fac_mti))
+
+table(Ocupados$t_per)
+# Tiene 4 casos 
+# 1. Familiares
+# 2. No familiares
+# 3. Cuenta propia
+# 4. N.E
+
+install.packages("plyr")
+require (plyr)
+
+Ocupados$t_per <- revalue(factor(Ocupados$t_per), c("4"= NA))
+
+Ocupados$t_per <- ifelse(Ocupados$t_per == "1", "Trabaja con familiares",
+                  ifelse(Ocupados$t_per == "2", "Trabaja con no familiares", 
+                  ifelse(Ocupados$t_per == "3", "Trabaja por cuenta propia", "NA")))
+
+
+TPer <- data.frame(wtd.table(Ocupados$t_per, weights = Ocupados$fac_mti))
+
+
+#### Ocupados por grupos de edad
+
+Ocupados$eda <- as.numeric(as.character(Ocupados$eda))
+
+Ocupados$eda <- ifelse(Ocupados$eda >= 5 & Ocupados$eda <= 9, "5 a 9",
+                ifelse(Ocupados$eda >= 10 & Ocupados$eda <= 13, "10 a 13",
+                ifelse(Ocupados$eda >= 14 & Ocupados$eda <= 17, "14 a 17", "NA")))
+
+GruposEdad <- data.frame(wtd.table(Ocupados$eda, weights = Ocupados$fac_mti))
+
+#### Ocupados según asistencia escolar
+
+AEscolar <- data.frame(wtd.table(Ocupados$asis, weights = Ocupados$fac_mti))
+
+#### Características del hogar
+
+TamHog <- data.frame(wtd.table(Ocupados$tam_hog, weights = Ocupados$fac_mti))
+
+#### Sexo del jefe del hogar
+
+JefeHog <- data.frame(wtd.table(Ocupados$sex_jefe, weights = Ocupados$fac_mti))
+
+#### Escolaridad del jefe del hogar
+
+#table(Ocupados$escol_jefe)
+
+Ocupados$escol_jefe <- revalue(factor(Ocupados$escol_jefe), c("7"= NA))
+
+EscolJefe <- data.frame(wtd.table(Ocupados$escol_jefe, weights = Ocupados$fac_mti))
+
+#### Tipo de apoyo
+
+#table(Ocupados$t_apo1)
+
+TipoApoyo <- data.frame(wtd.table(Ocupados$t_apo1, weights = Ocupados$fac_mti))
+
+#### Ocupación jefe de familia
+
+#table(Ocupados$ocu_jefe)
+
+OcuJefe <- data.frame(wtd.table(Ocupados$ocu_jefe, weights = Ocupados$fac_mti))
+
+
+require("nnet")
+################ MODELO 1 ###############
+
+mod <- multinom(t_per ~ 1, data = Ocupados)
+summary(mod)
+
+modfin<-multinom(t_per~sex+eda+asis+sex_jefe+escol_jefe+t_apo1+ocu_jefe,data=Ocupados)
+g<-summary(modfin,wald=T)
+print(g)
+
+######### TABLA EN LATEX
+
+install.packages("stargazer")
+require (stargazer)
+
+s <- stargazer(modfin, type ="html", title = "Coefficients", summary = T)
+stargazer(modfin, type = "text", title = "mlogit", summary = T, digits = 2, out = "C://Users//SALA-C29//Desktop//mlogit.txt")
