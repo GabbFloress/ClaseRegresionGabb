@@ -1,0 +1,165 @@
+### Personas Ocupadas y No Ocupadas dado que estudiaron 
+### el Bachillerato en una escuela pública
+
+install.packages("foreign")
+install.packages("quesionr")
+require (questionr)
+require(foreign)
+
+setwd("C://Users//SALA-C29//Desktop")
+ENILEMS <- read.dbf("cbasico.dbf")
+
+### Módulo de Inserción Laboral de los Egresados
+#     de Educación Media Superior
+#     (Personas de 18 a 20 años)
+
+# Sexo
+#TotalSexo <- data.frame(wtd.table(ENILEMS$SEX, weights = ENILEMS$FAC))
+
+# Grupo de edad (sólo existen edades 18, 19 y 20)
+#TotalGrupoEdad <- data.frame(wtd.table(ENILEMS$EDA_A, weights = ENILEMS$FAC))
+
+# Nivel Educativo
+#ENILEMS$P1_NIV <- as.numeric(as.character(ENILEMS$P1_NIV))
+#ENILEMS$P1_NIV <- ifelse(ENILEMS$P1_NIV == 1, "Bachillerato tecnológico",
+#                         ifelse(ENILEMS$P1_NIV == 2, "Profesional técnico (técnico medio)",
+ #                               ifelse(ENILEMS$P1_NIV == 3, "Bachillerato general (preparatoria)",
+ #                                      ifelse(ENILEMS$P1_NIV == 4, "Técnico superior universitario",
+  #                                            ifelse(ENILEMS$P1_NIV == 5, "Licenciatura (profesional)",
+   #                                                  ifelse(ENILEMS$P1_NIV == 6, "Maestría y doctorado", "NA"))))))
+
+#TotalNivelEducativo <- data.frame(wtd.table(ENILEMS$P1_NIV, weights = ENILEMS$FAC))
+
+
+
+#### Sólo los que estudiaron el bachillerato en una escuela pública ####
+
+ENILEMS$P7 <- as.numeric(as.character(ENILEMS$P7))
+PUBLICA <- subset(ENILEMS, ENILEMS$P7 == 1)
+
+PUBLICA$SEX <- ifelse(PUBLICA$SEX == 1, "Hombres", "Mujeres")
+#SexoBachilleratoPub <- data.frame(wtd.table(PUBLICA$SEX, weights = PUBLICA$FAC))
+
+#### Personas de 18 a 20 años Ocupados y No Ocupados dado que estudiaron 
+#### estudiaron el bachillerato en una escuela pública
+
+#wtd.table(ENILEMS$P35, weights = ENILEMS$FAC)
+
+######################## BASE FINAL #####################
+
+ENILEMS$P35 <- as.numeric(as.character(ENILEMS$P35))
+
+Ocu <- subset(ENILEMS, (ENILEMS$P35 == 2) | (ENILEMS$P35 == 3) | (ENILEMS$P35 == 4))
+
+#### Ocupados y No Ocupados ####
+
+Ocu$OcuBP <- ifelse(Ocu$P35 == 2 | Ocu$P35 == 4 , "Ocupados", "No Ocupados")
+
+OcupacionBP <- data.frame(wtd.table(Ocu$OcuBP, weights = Ocu$FAC))
+
+#### Sexo ####
+
+Ocu$SEX <- as.numeric(as.character(Ocu$SEX))
+
+Ocu$sexo <- ifelse(Ocu$SEX == 1, "Hombres",
+                  ifelse(Ocu$SEX == 2, "Mujeres", "NA"))
+
+SexoBP <- data.frame(wtd.table(Ocu$sexo, weights = Ocu$FAC))
+
+##### Nivel educativo #####
+
+Ocu$P1_NIV <- as.numeric(as.character(Ocu$P1_NIV))
+Ocu$nivel <- ifelse(Ocu$P1_NIV == 1, "Bachillerato tecnológico",
+                     ifelse(Ocu$P1_NIV == 2, "Profesional técnico (técnico medio)",
+                            ifelse(Ocu$P1_NIV == 3, "Bachillerato general (preparatoria)",
+                                   ifelse(Ocu$P1_NIV == 4, "Técnico superior universitario",
+                                          ifelse(Ocu$P1_NIV == 5, "Licenciatura (profesional)",
+                                                 ifelse(Ocu$P1_NIV == 6, "Maestría y doctorado", "NA"))))))
+
+NivelEduBP <- data.frame(wtd.table(Ocu$nivel, weights = Ocu$FAC))
+
+
+#### Grupos de edad ####
+
+Ocu$EDA_A <- as.numeric(as.character(Ocu$EDA_A))
+Ocu$edad <- ifelse(Ocu$EDA_A == 18, "18 años",
+                    ifelse(Ocu$EDA_A == 19, "19 años",
+                           ifelse(Ocu$EDA_A == 20, "20 años", "NA")))
+
+GrupoEdadBP <- data.frame(wtd.table(Ocu$edad, weights = Ocu$FAC))
+
+################### Modelo ##############################
+
+
+install.packages("nnet")
+require(nnet)
+
+
+modelo <- multinom(OcuBP~1, data = Ocu)
+summary(modelo)
+
+
+modelofinal <- multinom(OcuBP~sexo+edad+nivel, data = Ocu)
+
+g <- summary(modelofinal,wald=T)
+
+print(g)
+
+
+install.packages("stargazer")
+require (stargazer)
+
+s <- stargazer(modelofinal, exp(coef(modelofinal)), type ="text", title = "Coefficients", flip = TRUE)
+
+Coefficients
+====================================================================
+  Dependent variable:    
+  ---------------------------
+  OcuBP           
+--------------------------------------------------------------------
+  sexoMujeres                                        -0.283**          
+  (0.123)          
+
+  edad19 años                                        -0.233           
+  (0.183)          
+
+  edad20 años                                        -0.179           
+  (0.182)          
+
+  nivelBachillerato tecnológico                       0.089           
+  (0.164)          
+
+  nivelLicenciatura (profesional)                    -0.366**          
+  (0.150)          
+
+  nivelProfesional técnico (técnico medio)            0.372           
+  (0.261)          
+
+  nivelTécnico superior universitario                 0.191           
+  (0.513)          
+
+  Constant                                            0.849***          
+  (0.181)          
+
+--------------------------------------------------------------------
+  Akaike Inf. Crit.                                 1,558.043         
+====================================================================
+  Note:                                    *p<0.1; **p<0.05; ***p<0.01
+
+  
+Coefficients
+==============================================
+  (Intercept)                            2.337
+sexoMujeres                              0.754  # 0.246 veces menor que una mujer no esté ocupada que un hombre 
+edad19 años                              0.792  # 0.208 veces menos probable que los de 19 sean no ocupados que los de 18
+edad20 años                              0.836  # 0.164 veces menos probable que los de 20 sean no ocupados que los de 18
+nivelBachillerato tecnológico            1.093  # 1.093 veces más problable que los de Bachillerato tecnológico sean no ocupados que los de Bachillerato General
+nivelLicenciatura (profesional)          0.693  # 0.307 veces menos problable que los de Licenciatura (profesional) sean no ocupados que los de Bachillerato General
+nivelProfesional técnico (técnico medio) 1.451  # 1.451 veces más problable que los de Profesional técnico (técnico medio) sean no ocupados que los de Bachillerato General
+nivelTécnico superior universitario      1.210  # 1.210 veces más problable que los de Técnico superior universitario sean no ocupados que los de Bachillerato General
+----------------------------------------------
+
+
+### Integrantes:
+### Hernández Flores Laura Gabriela
+### Jiménez Calderón Leslie
