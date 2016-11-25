@@ -1,0 +1,107 @@
+### Personas Ocupadas y No Ocupadas dado que estudiaron 
+### el Bachillerato en una escuela pública
+
+install.packages("foreign")
+install.packages("quesionr")
+require (questionr)
+require(foreign)
+
+setwd("C://Users//FLORES//Desktop")
+ENILEMS <- read.dbf("cbasico.dbf")
+
+### Módulo de Inserción Laboral de los Egresados
+#     de Educación Media Superior
+#     (Personas de 18 a 20 años)
+
+# Sexo
+TotalSexo <- data.frame(wtd.table(ENILEMS$SEX, weights = ENILEMS$FAC))
+
+# Grupo de edad (sólo existen edades 18, 19 y 20)
+TotalGrupoEdad <- data.frame(wtd.table(ENILEMS$EDA_A, weights = ENILEMS$FAC))
+
+# Nivel Educativo
+ENILEMS$P1_NIV <- as.numeric(as.character(ENILEMS$P1_NIV))
+ENILEMS$P1_NIV <- ifelse(ENILEMS$P1_NIV == 1, "Bachillerato tecnológico",
+                  ifelse(ENILEMS$P1_NIV == 2, "Profesional técnico (técnico medio)",
+                  ifelse(ENILEMS$P1_NIV == 3, "Bachillerato general (preparatoria)",
+                  ifelse(ENILEMS$P1_NIV == 4, "Técnico superior universitario",
+                  ifelse(ENILEMS$P1_NIV == 5, "Licenciatura (profesional)",
+                  ifelse(ENILEMS$P1_NIV == 6, "Maestría y doctorado", "NA"))))))
+
+TotalNivelEducativo <- data.frame(wtd.table(ENILEMS$P1_NIV, weights = ENILEMS$FAC))
+
+
+
+#### Sólo los que estudiaron el bachillerato en una escuela pública ####
+
+ENILEMS$P7 <- as.numeric(as.character(ENILEMS$P7))
+PUBLICA <- subset(ENILEMS, ENILEMS$P7 == 1)
+
+PUBLICA$SEX <- ifelse(PUBLICA$SEX == 1, "Hombres", "Mujeres")
+SexoBachilleratoPub <- data.frame(wtd.table(PUBLICA$SEX, weights = PUBLICA$FAC))
+
+#### Personas de 18 a 20 años Ocupados y No Ocupados dado que estudiaron 
+#### estudiaron el bachillerato en una escuela pública
+
+wtd.table(ENILEMS$P35, weights = ENILEMS$FAC)
+
+# El número 1: Si el seleccionado ENILEMS no es quien dio su información en la ENOE 
+
+
+# El número 2: Si el seleccionado ENILEMS dio su información en la ENOE y desde que
+#              salió del bachillerato ha tenido más
+#              de un trabajo y se definió OCUPADO en el COE
+
+# El número 3: Si el seleccionado ENILEMS dio su información en la ENOE y se definió
+#              NO OCUPADO en el COE
+
+# El número 4: Si el seleccionado de la ENILEMS dio su información en la ENOE y desde
+#              que salió del bachillerato sólo ha tenido
+#              un trabajo y se definió OCUPADO en el COE
+
+######################## BASE FINAL #####################
+
+ENILEMS$P35 <- as.numeric(as.character(ENILEMS$P35))
+Ocu <- subset(ENILEMS, (ENILEMS$P35 == 2) | (ENILEMS$P35 == 3) | (ENILEMS$P35 == 4) )
+
+#### Ocupados y No Ocupados ####
+
+Ocu$P35 <- ifelse(Ocu$P35 == 2 | Ocu$P35 == 4 , "Ocupados", "No Ocupados")
+
+OcupacionBP <- data.frame(wtd.table(Ocu$P35, weights = Ocu$FAC))
+
+#### Sexo ####
+
+Ocu$SEX <- as.numeric(as.character(Ocu$SEX))
+Ocu$SEX <- ifelse(Ocu$SEX == 1, "Hombres",
+           ifelse(Ocu$SEX == 2, "Mujeres", "NA"))
+
+SexoBP <- data.frame(wtd.table(Ocu$SEX, weights = Ocu$FAC))
+
+##### Nivel educativo #####
+
+Ocu$P1_NIV <- as.numeric(as.character(Ocu$P1_NIV))
+Ocu$P1_NIV <- ifelse(Ocu$P1_NIV == 1, "Bachillerato tecnológico",
+              ifelse(Ocu$P1_NIV == 2, "Profesional técnico (técnico medio)",
+              ifelse(Ocu$P1_NIV == 3, "Bachillerato general (preparatoria)",
+              ifelse(Ocu$P1_NIV == 4, "Técnico superior universitario",
+              ifelse(Ocu$P1_NIV == 5, "Licenciatura (profesional)",
+              ifelse(Ocu$P1_NIV == 6, "Maestría y doctorado", "NA"))))))
+
+NivelEduBP <- data.frame(wtd.table(Ocu$P1_NIV, weights = Ocu$FAC))
+
+#### Grupos de edad ####
+
+Ocu$EDA_A <- as.numeric(as.character(Ocu$EDA_A))
+Ocu$EDA_A <- ifelse(Ocu$EDA_A == 18, "18 años",
+             ifelse(Ocu$EDA_A == 19, "19 años",
+             ifelse(Ocu$EDA_A == 20, "20 años", "NA")))
+
+GrupoEdadBP <- data.frame(wtd.table(Ocu$EDA_A, weights = Ocu$FAC))
+
+
+
+### Integrantes:
+### Hernández Flores Laura Gabriela
+### Jiménez Calderón Leslie
+
