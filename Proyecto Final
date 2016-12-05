@@ -1,0 +1,412 @@
+install.packages("foreign")
+install.packages("questionr")
+install.packages("car")
+install.packages("nnet")
+install.packages("stargazer")
+
+require(foreign)
+require(questionr)
+require(car)
+require(nnet)
+require (stargazer)
+
+setwd("C://Users//FLORES//Desktop")
+
+sdemt316 <- read.dbf("sdemt316.dbf")
+vivt316 <- read.dbf("vivt316.dbf")
+
+folio <- paste(sdemt316$CD_A, sdemt316$ENT, sdemt316$CON, sdemt316$V_SEL, 
+               sdemt316$N_HOG, sdemt316$H_MUD, sdemt316$N_REN)
+
+x <- data.frame(sdemt316, folio)
+
+folio <- paste(vivt316$CD_A, vivt316$ENT, vivt316$CON, vivt316$V_SEL)
+
+x1 <- data.frame(vivt316, folio)
+
+base <- merge(x, x1, by = "folio", all.x = TRUE)
+
+###Verificar: 122 461 977 personas
+
+#wtd.table(base$EDA, weights = base$FAC.x)
+
+#sum(wtd.table(base$EDA, weights = base$FAC.x))
+
+##### Población ocupada de 25 a 59 años ######
+
+base$EDA <- as.numeric(as.character(base$EDA))
+base$CLASE2 <- as.numeric(as.character(base$CLASE2))
+
+Mex <- subset(base, base$EDA >= 25 & base$EDA <= 59 & base$CLASE2 == 1 & base$CD_A.x == "01" & base$ING7C >= 1 & base$ING7C <= 5)
+
+Gdl <- subset(base, base$EDA >= 25 & base$EDA <= 59 & base$CLASE2 == 1 & base$CD_A.x == "02" & base$ING7C >= 1 & base$ING7C <= 5)
+
+Mty <- subset(base, base$EDA >= 25 & base$EDA <= 59 & base$CLASE2 == 1 & base$CD_A.x == "03" & base$ING7C >= 1 & base$ING7C <= 5)
+
+Oax <- subset(base, base$EDA >= 25 & base$EDA <= 59 & base$CLASE2 == 1 & base$CD_A.x == "31" & base$ING7C >= 1 & base$ING7C <= 5)
+
+Chih <- subset(base, base$EDA >= 25 & base$EDA <= 59 & base$CLASE2 == 1 & base$CD_A.x == "09" & base$ING7C >= 1 & base$ING7C <= 5)
+
+Tlx <- subset(base, base$EDA >= 25 & base$EDA <= 59 & base$CLASE2 == 1 & base$CD_A.x == "39" & base$ING7C >= 1 & base$ING7C <= 5)
+
+############################ México ############################
+
+#Sexo
+
+Mex$SEX <- as.numeric(as.character(Mex$SEX))
+
+Mex$SEXO <- ifelse(Mex$SEX == 1, "Hombre", "Mujer")
+
+SexMex <- data.frame(wtd.table(Mex$SEXO, weights = Mex$FAC.x))
+
+#Nivel de Ingreso
+
+Mex$ING7C <- as.numeric(as.character(Mex$ING7C))
+
+Mex$ING <- ifelse(Mex$ING7C == 1 , "Hasta un salario mínimo",
+           ifelse(Mex$ING7C == 2 , "Más de 1 hasta 2 salarios mínimos",
+           ifelse(Mex$ING7C == 3 , "Más de 2 hasta 3 salarios mínimos",
+           ifelse(Mex$ING7C == 4 , "Más de 3 hasta 5 salarios mínimos",
+           ifelse(Mex$ING7C == 5 , "Más de 5 salarios mínimos", "NA")))))
+
+IngMex <- data.frame(wtd.table(Mex$ING, weights = Mex$FAC.x))
+
+
+#Grupo de edad
+
+Mex$EDA <- as.numeric(as.character(Mex$EDA))
+
+Mex$EDAD <- ifelse(Mex$EDA >= 25 & Mex$EDA <= 29, "De 25 a 29 años",
+                   ifelse(Mex$EDA >= 30 & Mex$EDA <= 39, "De 30 a 39 años",
+                          ifelse(Mex$EDA >= 40 & Mex$EDA <= 49, "De 40 a 49 años",
+                                 ifelse(Mex$EDA >= 50 & Mex$EDA <= 59, "De 50 a 59 años", "NA"))))
+
+EdadMex <- data.frame(wtd.table(Mex$EDAD, weights = Mex$FAC.x))
+
+#Nivel educativo
+
+Mex$CS_P13_1 <- as.numeric(as.character(Mex$CS_P13_1))
+
+Mex$EDU <- ifelse(Mex$CS_P13_1 >= 0 & Mex$CS_P13_1 <= 3, "De ningún nivel hasta Secundaria",
+                   ifelse(Mex$CS_P13_1 == 4, "Preparatoria o Bachillerto",
+                           ifelse(Mex$CS_P13_1 >= 5 & Mex$CS_P13_1 <= 6, "Normal o Carrera Técnica",
+                                  ifelse(Mex$CS_P13_1 >= 7, "Profesional",
+                                         ifelse(Mex$CS_P13_1 >= 8 & Mex$CS_P13_1 <= 9, "Maestría y Doctorado", "NA")))))
+
+EduMex <- data.frame(wtd.table(Mex$EDU, weights = Mex$FAC.x))
+
+############################ Guadalajara ############################
+
+#Sexo
+
+Gdl$SEX <- as.numeric(as.character(Gdl$SEX))
+
+Gdl$SEXO <- ifelse(Gdl$SEX == 1, "Hombre", "Mujer")
+
+SexGdl <- data.frame(wtd.table(Gdl$SEXO, weights = Gdl$FAC.x))
+
+#Nivel de Ingreso
+
+Gdl$ING7C <- as.numeric(as.character(Gdl$ING7C))
+
+Gdl$ING <- ifelse(Gdl$ING7C == 1 , "Hasta un salario mínimo",
+                  ifelse(Gdl$ING7C == 2 , "Más de 1 hasta 2 salarios mínimos",
+                         ifelse(Gdl$ING7C == 3 , "Más de 2 hasta 3 salarios mínimos",
+                                ifelse(Gdl$ING7C == 4 , "Más de 3 hasta 5 salarios mínimos",
+                                       ifelse(Gdl$ING7C == 5 , "Más de 5 salarios mínimos", "NA")))))
+
+IngGdl <- data.frame(wtd.table(Gdl$ING, weights = Gdl$FAC.x))
+
+#Grupo de edad
+
+Gdl$EDA <- as.numeric(as.character(Gdl$EDA))
+
+Gdl$EDAD <- ifelse(Gdl$EDA >= 25 & Gdl$EDA <= 29, "De 25 a 29 años",
+                   ifelse(Gdl$EDA >= 30 & Gdl$EDA <= 39, "De 30 a 39 años",
+                          ifelse(Gdl$EDA >= 40 & Gdl$EDA <= 49, "De 40 a 49 años",
+                                 ifelse(Gdl$EDA >= 50 & Gdl$EDA <= 59, "De 50 a 59 años", "NA"))))
+
+EdadGdl <- data.frame(wtd.table(Gdl$EDAD, weights = Gdl$FAC.x))
+
+#Nivel educativo
+
+Gdl$CS_P13_1 <- as.numeric(as.character(Gdl$CS_P13_1))
+
+Gdl$EDU <- ifelse(Gdl$CS_P13_1 >= 0 & Gdl$CS_P13_1 <= 3, "De ningún nivel hasta Secundaria",
+                  ifelse(Gdl$CS_P13_1 == 4, "Preparatoria o Bachillerto",
+                         ifelse(Gdl$CS_P13_1 >= 5 & Gdl$CS_P13_1 <= 6, "Normal o Carrera Técnica",
+                                ifelse(Gdl$CS_P13_1 >= 7, "Profesional",
+                                       ifelse(Gdl$CS_P13_1 >= 8 & Gdl$CS_P13_1 <= 9, "Maestría y Doctorado", "NA")))))
+
+EduGdl <- data.frame(wtd.table(Gdl$EDU, weights = Gdl$FAC.x))
+
+############################ Monterrey ############################
+
+#Sexo
+
+Mty$SEX <- as.numeric(as.character(Mty$SEX))
+
+Mty$SEXO <- ifelse(Mty$SEX == 1, "Hombre", "Mujer")
+
+SexMty <- data.frame(wtd.table(Mty$SEXO, weights = Mty$FAC.x))
+
+#Nivel de Ingreso
+
+Mty$ING7C <- as.numeric(as.character(Mty$ING7C))
+
+Mty$ING <- ifelse(Mty$ING7C == 1 , "Hasta un salario mínimo",
+                  ifelse(Mty$ING7C == 2 , "Más de 1 hasta 2 salarios mínimos",
+                         ifelse(Mty$ING7C == 3 , "Más de 2 hasta 3 salarios mínimos",
+                                ifelse(Mty$ING7C == 4 , "Más de 3 hasta 5 salarios mínimos",
+                                       ifelse(Mty$ING7C == 5 , "Más de 5 salarios mínimos", "NA")))))
+
+IngMty <- data.frame(wtd.table(Mty$ING, weights = Mty$FAC.x))
+
+#Grupo de edad
+
+Mty$EDA <- as.numeric(as.character(Mty$EDA))
+
+Mty$EDAD <- ifelse(Mty$EDA >= 25 & Mty$EDA <= 29, "De 25 a 29 años",
+                   ifelse(Mty$EDA >= 30 & Mty$EDA <= 39, "De 30 a 39 años",
+                          ifelse(Mty$EDA >= 40 & Mty$EDA <= 49, "De 40 a 49 años",
+                                 ifelse(Mty$EDA >= 50 & Mty$EDA <= 59, "De 50 a 59 años", "NA"))))
+
+EdadMty <- data.frame(wtd.table(Mty$EDAD, weights = Mty$FAC.x))
+
+#Nivel educativo
+
+Mty$CS_P13_1 <- as.numeric(as.character(Mty$CS_P13_1))
+
+Mty$EDU <- ifelse(Mty$CS_P13_1 >= 0 & Mty$CS_P13_1 <= 3, "De ningún nivel hasta Secundaria",
+                  ifelse(Mty$CS_P13_1 == 4, "Preparatoria o Bachillerto",
+                         ifelse(Mty$CS_P13_1 >= 5 & Mty$CS_P13_1 <= 6, "Normal o Carrera Técnica",
+                                ifelse(Mty$CS_P13_1 >= 7, "Profesional",
+                                       ifelse(Mty$CS_P13_1 >= 8 & Mty$CS_P13_1 <= 9, "Maestría y Doctorado", "NA")))))
+
+EduMty <- data.frame(wtd.table(Mty$EDU, weights = Mty$FAC.x))
+
+############################ Oaxaca ############################
+
+#Sexo
+
+Oax$SEX <- as.numeric(as.character(Oax$SEX))
+
+Oax$SEXO <- ifelse(Oax$SEX == 1, "Hombre", "Mujer")
+
+SexOax <- data.frame(wtd.table(Oax$SEXO, weights = Oax$FAC.x))
+
+#Nivel de Ingreso
+
+Oax$ING7C <- as.numeric(as.character(Oax$ING7C))
+
+Oax$ING <- ifelse(Oax$ING7C == 1 , "Hasta un salario mínimo",
+                  ifelse(Oax$ING7C == 2 , "Más de 1 hasta 2 salarios mínimos",
+                         ifelse(Oax$ING7C == 3 , "Más de 2 hasta 3 salarios mínimos",
+                                ifelse(Oax$ING7C == 4 , "Más de 3 hasta 5 salarios mínimos",
+                                       ifelse(Oax$ING7C == 5 , "Más de 5 salarios mínimos", "NA")))))
+
+IngOax <- data.frame(wtd.table(Oax$ING, weights = Oax$FAC.x))
+
+#Grupo de edad
+
+Oax$EDA <- as.numeric(as.character(Oax$EDA))
+
+Oax$EDAD <- ifelse(Oax$EDA >= 25 & Oax$EDA <= 29, "De 25 a 29 años",
+                   ifelse(Oax$EDA >= 30 & Oax$EDA <= 39, "De 30 a 39 años",
+                          ifelse(Oax$EDA >= 40 & Oax$EDA <= 49, "De 40 a 49 años",
+                                 ifelse(Oax$EDA >= 50 & Oax$EDA <= 59, "De 50 a 59 años", "NA"))))
+
+EdadOax <- data.frame(wtd.table(Oax$EDAD, weights = Oax$FAC.x))
+
+#Nivel educativo
+
+Oax$CS_P13_1 <- as.numeric(as.character(Oax$CS_P13_1))
+
+Oax$EDU <- ifelse(Oax$CS_P13_1 >= 0 & Oax$CS_P13_1 <= 3, "De ningún nivel hasta Secundaria",
+                  ifelse(Oax$CS_P13_1 == 4, "Preparatoria o Bachillerto",
+                         ifelse(Oax$CS_P13_1 >= 5 & Oax$CS_P13_1 <= 6, "Normal o Carrera Técnica",
+                                ifelse(Oax$CS_P13_1 >= 7, "Profesional",
+                                       ifelse(Oax$CS_P13_1 >= 8 & Oax$CS_P13_1 <= 9, "Maestría y Doctorado", "NA")))))
+
+EduOax <- data.frame(wtd.table(Oax$EDU, weights = Oax$FAC.x))
+
+############################ Chihuahua ############################
+
+#Sexo
+
+Chih$SEX <- as.numeric(as.character(Chih$SEX))
+
+Chih$SEXO <- ifelse(Chih$SEX == 1, "Hombre", "Mujer")
+
+SexChih <- data.frame(wtd.table(Chih$SEXO, weights = Chih$FAC.x))
+
+#Nivel de Ingreso
+
+Chih$ING7C <- as.numeric(as.character(Chih$ING7C))
+
+Chih$ING <- ifelse(Chih$ING7C == 1 , "Hasta un salario mínimo",
+                  ifelse(Chih$ING7C == 2 , "Más de 1 hasta 2 salarios mínimos",
+                         ifelse(Chih$ING7C == 3 , "Más de 2 hasta 3 salarios mínimos",
+                                ifelse(Chih$ING7C == 4 , "Más de 3 hasta 5 salarios mínimos",
+                                       ifelse(Chih$ING7C == 5 , "Más de 5 salarios mínimos", "NA")))))
+
+IngChih <- data.frame(wtd.table(Chih$ING, weights = Chih$FAC.x))
+
+#Grupo de edad
+
+Chih$EDA <- as.numeric(as.character(Chih$EDA))
+
+Chih$EDAD <- ifelse(Chih$EDA >= 25 & Chih$EDA <= 29, "De 25 a 29 años",
+                   ifelse(Chih$EDA >= 30 & Chih$EDA <= 39, "De 30 a 39 años",
+                          ifelse(Chih$EDA >= 40 & Chih$EDA <= 49, "De 40 a 49 años",
+                                 ifelse(Chih$EDA >= 50 & Chih$EDA <= 59, "De 50 a 59 años", "NA"))))
+
+EdadChih <- data.frame(wtd.table(Chih$EDAD, weights = Chih$FAC.x))
+
+#Nivel educativo
+
+Chih$CS_P13_1 <- as.numeric(as.character(Chih$CS_P13_1))
+
+Chih$EDU <- ifelse(Chih$CS_P13_1 >= 0 & Chih$CS_P13_1 <= 3, "De ningún nivel hasta Secundaria",
+                  ifelse(Chih$CS_P13_1 == 4, "Preparatoria o Bachillerto",
+                         ifelse(Chih$CS_P13_1 >= 5 & Chih$CS_P13_1 <= 6, "Normal o Carrera Técnica",
+                                ifelse(Chih$CS_P13_1 >= 7, "Profesional",
+                                       ifelse(Chih$CS_P13_1 >= 8 & Chih$CS_P13_1 <= 9, "Maestría y Doctorado", "NA")))))
+
+EduChih <- data.frame(wtd.table(Chih$EDU, weights = Chih$FAC.x))
+
+############################ Tlaxcala ############################
+
+#Sexo
+
+Tlx$SEX <- as.numeric(as.character(Tlx$SEX))
+
+Tlx$SEXO <- ifelse(Tlx$SEX == 1, "Hombre", "Mujer")
+
+SexTlx <- data.frame(wtd.table(Tlx$SEXO, weights = Tlx$FAC.x))
+
+#Nivel de Ingreso
+
+Tlx$ING7C <- as.numeric(as.character(Tlx$ING7C))
+
+Tlx$ING <- ifelse(Tlx$ING7C == 1 , "Hasta un salario mínimo",
+                   ifelse(Tlx$ING7C == 2 , "Más de 1 hasta 2 salarios mínimos",
+                          ifelse(Tlx$ING7C == 3 , "Más de 2 hasta 3 salarios mínimos",
+                                 ifelse(Tlx$ING7C == 4 , "Más de 3 hasta 5 salarios mínimos",
+                                        ifelse(Tlx$ING7C == 5 , "Más de 5 salarios mínimos", "NA")))))
+
+IngTlx <- data.frame(wtd.table(Tlx$ING, weights = Tlx$FAC.x))
+
+#Grupo de edad
+
+Tlx$EDA <- as.numeric(as.character(Tlx$EDA))
+
+Tlx$EDAD <- ifelse(Tlx$EDA >= 25 & Tlx$EDA <= 29, "De 25 a 29 años",
+                   ifelse(Tlx$EDA >= 30 & Tlx$EDA <= 39, "De 30 a 39 años",
+                          ifelse(Tlx$EDA >= 40 & Tlx$EDA <= 49, "De 40 a 49 años",
+                                 ifelse(Tlx$EDA >= 50 & Tlx$EDA <= 59, "De 50 a 59 años", "NA"))))
+
+EdadTlx <- data.frame(wtd.table(Tlx$EDAD, weights = Tlx$FAC.x))
+
+#Nivel educativo
+
+Tlx$CS_P13_1 <- as.numeric(as.character(Tlx$CS_P13_1))
+
+Tlx$EDU <- ifelse(Tlx$CS_P13_1 >= 0 & Tlx$CS_P13_1 <= 3, "De ningún nivel hasta Secundaria",
+                   ifelse(Tlx$CS_P13_1 == 4, "Preparatoria o Bachillerto",
+                          ifelse(Tlx$CS_P13_1 >= 5 & Tlx$CS_P13_1 <= 6, "Normal o Carrera Técnica",
+                                 ifelse(Tlx$CS_P13_1 >= 7, "Profesional",
+                                        ifelse(Tlx$CS_P13_1 >= 8 & Tlx$CS_P13_1 <= 9, "Maestría y Doctorado", "NA")))))
+
+EduTlx <- data.frame(wtd.table(Tlx$EDU, weights = Tlx$FAC.x))
+
+############################ MODELO MÉXICO ############################
+
+ModMex <- multinom(ING ~ 1, data = Mex)
+summary(ModMex)
+
+
+ModeloMex <- multinom(ING ~ SEXO+EDAD+EDU, data = Mex)
+
+m <- summary(ModeloMex,wald=T)
+
+print(m)
+
+sm <- stargazer(ModeloMex, exp(coef(ModeloMex)), type ="text", title = "Coefficients", flip = TRUE)
+
+############################ MODELO GUADALAJARA ############################
+
+ModGdl <- multinom(ING ~ 1, data = Gdl)
+summary(ModGdl)
+
+
+ModeloGdl <- multinom(ING ~ SEXO+EDAD+EDU, data = Gdl)
+
+g <- summary(ModeloGdl,wald=T)
+
+print(g)
+
+sg <- stargazer(ModeloGdl, exp(coef(ModeloGdl)), type ="text", title = "Coefficients", flip = TRUE)
+
+############################ MODELO MONTERREY ############################
+
+ModMty <- multinom(ING ~ 1, data = Mty)
+summary(ModMty)
+
+
+ModeloMty <- multinom(ING ~ SEXO+EDAD+EDU, data = Mty)
+
+mt <- summary(ModeloMty,wald=T)
+
+print(mt)
+
+smt <- stargazer(ModeloMty, exp(coef(ModeloMty)), type ="text", title = "Coefficients", flip = TRUE)
+
+############################ MODELO OAXACA ############################
+
+ModOax <- multinom(ING ~ 1, data = Oax)
+summary(ModOax)
+
+
+ModeloOax <- multinom(ING ~ SEXO+EDAD+EDU, data = Oax)
+
+o <- summary(ModeloOax,wald=T)
+
+print(o)
+
+so <- stargazer(ModeloOax, exp(coef(ModeloOax)), type ="text", title = "Coefficients", flip = TRUE)
+
+############################ MODELO CHIHUAHUA ############################
+
+ModChih <- multinom(ING ~ 1, data = Chih)
+summary(ModChih)
+
+
+ModeloChih <- multinom(ING ~ SEXO+EDAD+EDU, data = Chih)
+
+c <- summary(ModeloChih,wald=T)
+
+print(c)
+
+sc <- stargazer(ModeloChih, exp(coef(ModeloChih)), type ="text", title = "Coefficients", flip = TRUE)
+
+############################ MODELO TLAXCALA ############################
+
+ModTlx <- multinom(ING ~ 1, data = Tlx)
+summary(ModTlx)
+
+
+ModeloTlx <- multinom(ING ~ SEXO+EDAD+EDU, data = Tlx)
+
+t <- summary(ModeloTlx,wald=T)
+
+print(t)
+
+st <- stargazer(ModeloTlx, exp(coef(ModeloTlx)), type ="text", title = "Coefficients", flip = TRUE)
+
+
+###################################################
+
+# Equipo:
+# Hernández Flores Laura Gabriela
+# Jiménez Calderón Leslie 
