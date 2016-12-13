@@ -1,0 +1,98 @@
+
+install.packages("WriteXLS")
+install.packages("foreign")
+install.packages("questionr")
+install.packages("car")
+require(foreign)
+require (questionr)
+require(car)
+library (WriteXLS)
+
+
+#MTI511 <- read.dbf("/home/sgr/Escritorio/mti05a11_2007.dbf")
+#MTI1117 <- read.dbf("/home/sgr/Escritorio/mti12a17_2007.dbf")
+
+mtisdem <- read.dbf("/home/sgr/Escritorio/mti_sdem.dbf")
+
+mtisdem <- subset(mtisdem, mtisdem$DUR_JOR != 6 & mtisdem$C_LUG != 3 & mtisdem$TAM_UNI != 6)
+
+#wtd.table (MTI511$SEX, weights = MTI511$FACTOR)
+#wtd.table (MTI1117$SEX, weights = MTI1117$FACTOR)
+
+
+
+# Sexo
+#wtd.table (mtisdem$SEX, weights = mtisdem$FACTOR)
+mtisdem$SEX <- as.character(as.numeric(mtisdem$SEX))
+mtisdem$SEX <- ifelse(mtisdem$SEX == 1, "Hombre", "Mujer")
+
+Sexo07 <- data.frame(wtd.table(mtisdem$SEX, weights = mtisdem$FACTOR))
+                      
+                      
+#Grupos edad
+#wtd.table (mtisdem$EDAD1, weights = mtisdem$FACTOR)
+
+mtisdem$EDAD1 <- as.character(as.numeric(mtisdem$EDAD1))
+mtisdem$EDAD1 <- ifelse(mtisdem$EDAD1 == 1, "5 a 9 años",
+                        ifelse(mtisdem$EDAD1 == 2, "10 a 13 años", 
+                               ifelse(mtisdem$EDAD1 == 3, "14 a 17 años", "NA")))
+                      
+
+Edad07 <- data.frame(wtd.table(mtisdem$EDAD1, weights = mtisdem$FACTOR))
+
+#Duración Jornada
+#wtd.table (mtisdem$DUR_JOR, weights = mtisdem$FACTOR)
+
+mtisdem$DUR_JOR <- as.character(as.numeric(mtisdem$DUR_JOR))
+
+mtisdem$DUR_JOR <- ifelse(mtisdem$DUR_JOR == 1, "Menos de 15 horas",
+                        ifelse(mtisdem$DUR_JOR == 2 & mtisdem$DUR_JOR == 3, "De 15 a 34 horas", 
+                               ifelse(mtisdem$DUR_JOR == 4, "Más de 35 horas", 
+                                      ifelse(mtisdem$DUR_JOR == 5, "No tiene horario", "NA"))))
+
+DurJor07 <- data.frame(wtd.table(mtisdem$DUR_JOR, weights = mtisdem$FACTOR))
+
+#Trabajo
+#wtd.table (mtisdem$C_LUG, weights = mtisdem$FACTOR)
+
+mtisdem$C_LUG <- as.character(as.numeric(mtisdem$C_LUG))
+mtisdem$C_LUG <- ifelse(mtisdem$C_LUG == 1, "Apropiado", "No Apropiado")
+
+CLug07 <- data.frame(wtd.table(mtisdem$C_LUG, weights = mtisdem$FACTOR))
+
+#Tamaño empresa
+#wtd.table (mtisdem$TAM_UNI, weights = mtisdem$FACTOR)
+
+mtisdem$TAM_UNI <- as.character(as.numeric(mtisdem$TAM_UNI))
+
+mtisdem$TAM_UNI <- ifelse(mtisdem$TAM_UNI == 1 & mtisdem$TAM_UNI == 2, "Menor a 6 personas",
+                          ifelse(mtisdem$TAM_UNI == 3 & mtisdem$TAM_UNI == 4, "De 6 a 16 personas", 
+                                 ifelse(mtisdem$TAM_UNI == 5, "Mayor a 16 personas", "NA")))
+
+TamUni07 <- data.frame(wtd.table(mtisdem$TAM_UNI, weights = mtisdem$FACTOR))
+
+
+# Tipo de trabajo 
+wtd.table (mtisdem$GOPRIN, weights = mtisdem$FACTOR)
+
+mtisdem$GOPRIN <- as.character(as.numeric(mtisdem$GOPRIN))
+mtisdem$GOPRIN <- ifelse(mtisdem$GOPRIN == 1, "Trabajadores industriales, artesanos y ayudantes",
+                        ifelse(mtisdem$GOPRIN == 2, "Comerciantes y empleados de comercios establecidos", 
+                               ifelse(mtisdem$GOPRIN == 3, "Vendedores ambulantes y trabajadores ambulantes en servicios", 
+                                      ifelse(mtisdem$GOPRIN == 4, "14 a 17 años", 
+                                             ifelse(mtisdem$GOPRIN == 5, "14 a 17 años", 
+                                                    ifelse(mtisdem$GOPRIN == 6, "14 a 17 años", 
+                                                           ifelse(mtisdem$GOPRIN == 7, "14 a 17 años", 
+
+
+# Pos Ocu
+wtd.table (mtisdem$POS, weights = mtisdem$FACTOR)
+
+
+# Accidentes
+wtd.table (mtisdem$CON_ACC, weights = mtisdem$FACTOR)
+
+
+# Expuesto a riesgos
+wtd.table (mtisdem$C_RIESGOAF, weights = mtisdem$FACTOR)
+
