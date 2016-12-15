@@ -1,0 +1,196 @@
+install.packages("foreign")
+install.packages("questionr")
+install.packages("car")
+require(foreign)
+require(questionr)
+require(car)
+
+setwd("/home/sgr/Escritorio")
+mtisdem07 <- read.dbf("mti_sdem.dbf")
+mtisdem15 <- read.dbf("mti2015_05_17_sdem_precodificado.DBF")
+
+mtisdem07$DUR_JOR <- as.numeric(as.character(mtisdem07$DUR_JOR))
+mtisdem07$C_LUG <- as.numeric(as.character(mtisdem07$C_LUG))
+mtisdem07$TAM_UNI <- as.numeric(as.character(mtisdem07$TAM_UNI))
+mtisdem07$GOPRIN <- as.numeric(as.character(mtisdem07$GOPRIN))
+mtisdem15$DUR_JOR <- as.numeric(as.character(mtisdem15$DUR_JOR))
+mtisdem15$C_LUG <- as.numeric(as.character(mtisdem15$C_LUG))
+mtisdem15$TAM_UNI <- as.numeric(as.character(mtisdem15$TAM_UNI))
+mtisdem15$G_OCU <- as.numeric(as.character(mtisdem15$G_OCU))
+mtisdem15$POS_OCU <- as.numeric(as.character(mtisdem15$POS_OCU))
+######################################   BASES  #########################################
+
+MTI07 <- subset(mtisdem07, mtisdem07$DUR_JOR <= 5 & mtisdem07$C_LUG <= 2 & mtisdem07$TAM_UNI <= 5 & mtisdem07$GOPRIN <= 6)
+MTI15 <- subset(mtisdem15, mtisdem15$DUR_JOR <= 6 & mtisdem15$T_UNI >= 1 & mtisdem15$T_UNI <= 5 & mtisdem15$POS_OCU >= 1 & mtisdem15$POS_OCU <=4)
+
+############################################################################################################
+
+# Sexo 2007
+
+MTI07$SEX <- as.numeric(as.character(MTI07$SEX))
+
+MTI07$SEX <- ifelse(MTI07$SEX == 1, "Hombre", "Mujer")
+
+Sex07 <- data.frame(wtd.table(MTI07$SEX, weights = MTI07$FACTOR))
+
+# Sexo 2015
+
+MTI15$SEX <- as.numeric(as.character(MTI15$SEX))
+
+MTI15$SEX <- ifelse(MTI15$SEX == 1, "Hombre", "Mujer")
+
+Sex15 <- data.frame(wtd.table(MTI15$SEX, weights = MTI15$FAC_MTI))
+
+############################################################################################################
+# Grupo de edad 2007
+
+MTI07$EDA <- as.numeric(as.character(MTI07$EDA))
+
+MTI07$EDA <- ifelse(MTI07$EDA >= 5 & MTI07$EDA <= 9, "De 5 a 9 años",
+                    ifelse(MTI07$EDA >= 10 & MTI07$EDA <= 13, "De 10 a 13 años",
+                           ifelse(MTI07$EDA >= 14 & MTI07$EDA <= 17, "De 14 a 17 años", "NA")))
+
+Edad07 <- data.frame(wtd.table(MTI07$EDA, weights = MTI07$FACTOR))
+
+# Grupo de edad 2015
+
+MTI15$EDA <- as.numeric(as.character(MTI15$EDA))
+
+MTI15$EDA <- ifelse(MTI15$EDA >= 5 & MTI15$EDA <= 9, "De 5 a 9 años",
+                    ifelse(MTI15$EDA >= 10 & MTI15$EDA <= 13, "De 10 a 13 años",
+                           ifelse(MTI15$EDA >= 14 & MTI15$EDA <= 17, "De 14 a 17 años", "NA")))
+
+Edad15 <- data.frame(wtd.table(MTI15$EDA, weights = MTI15$FAC_MTI))
+
+############################################################################################################
+
+#Duración de jornada 2007
+
+MTI07$DUR_JOR <- as.numeric(as.character(MTI07$DUR_JOR))
+
+MTI07$DUR_JOR <- ifelse(MTI07$DUR_JOR == 1, "Menos de 15 horas",
+                        ifelse(MTI07$DUR_JOR >= 2 & MTI07$DUR_JOR <= 3, "De 15 a 34 horas",
+                               ifelse(MTI07$DUR_JOR == 4, "Más de 35 horas", "No tiene horario regular")))
+
+DurJor07 <- data.frame(wtd.table(MTI07$DUR_JOR, weights = MTI07$FACTOR))
+
+
+#Duración de jornada 2015
+
+MTI15$DUR_JOR <- as.numeric(as.character(MTI15$DUR_JOR))
+
+MTI15$DUR_JOR <- ifelse(MTI15$DUR_JOR == 1, "Menos de 15 horas",
+                        ifelse(MTI15$DUR_JOR >= 2 & MTI15$DUR_JOR <= 3, "De 15 a 35 horas",
+                               ifelse(MTI15$DUR_JOR >= 4 & MTI15$DUR_JOR <= 5, "Más de 36 horas", "No tiene horario regular")))
+
+DurJor15 <- data.frame(wtd.table(MTI15$DUR_JOR, weights = MTI15$FAC_MTI))
+
+
+############################################################################################################
+
+#Condición del lugar de trabajo 2007
+
+MTI07$C_LUG <- as.character(as.numeric(MTI07$C_LUG))
+MTI07$C_LUG <- ifelse(MTI07$C_LUG == 1, "Apropiado", "No Apropiado")
+
+CLug07 <- data.frame(wtd.table(MTI07$C_LUG, weights = MTI07$FACTOR))
+
+#Condición del lugar de trabajo 2015
+
+#MTI15$C_LUG <- as.character(as.numeric(MTI15$C_LUG))
+#MTI15$C_LUG <- ifelse(MTI15$C_LUG == 1, "Apropiado", "No Apropiado")
+
+#CLug07 <- data.frame(wtd.table(MTI15$C_LUG, weights = MTI07$FACTOR))
+ls(MTI15)
+############################################################################################################
+
+#Tamaño de la empresa 2007
+
+MTI07$TAM_UNI <- as.character(as.numeric(MTI07$TAM_UNI))
+
+MTI07$TAM_UNI <- ifelse(MTI07$TAM_UNI >= 1 & MTI07$TAM_UNI <= 2, "Menor a 6 personas",
+                        ifelse(MTI07$TAM_UNI >= 3 & MTI07$TAM_UNI <= 4, "De 6 a 16 personas", 
+                               ifelse(MTI07$TAM_UNI == 5, "Mayor a 16 personas", "NA")))
+
+TamEmp07 <- data.frame(wtd.table(MTI07$TAM_UNI, weights = MTI07$FACTOR))
+
+#Tamaño de la empresa 2015 >:(
+#wtd.table(MTI15$T_UNI, weights = MTI15$FAC_MTI)
+
+MTI15$T_UNI <- as.character(as.numeric(MTI15$T_UNI))
+
+MTI15$T_UNI <- ifelse(MTI15$T_UNI >= 1 & MTI15$T_UNI <= 2, "Menor a 6 personas",
+                      ifelse(MTI15$T_UNI >= 3 & MTI15$T_UNI <= 4, "De 6 a 16 personas", "Mayor a 16 personas"))
+
+TamEmp15 <- data.frame(wtd.table(MTI15$T_UNI, weights = MTI15$FAC_MTI))
+
+############################################################################################################
+
+# Tipo de trabajo 2007
+
+wtd.table (MTI07$GOPRIN, weights = MTI07$FACTOR)
+
+MTI07$GOPRIN <- as.character(as.numeric(MTI07$GOPRIN))
+MTI07$GOPRIN <- ifelse(MTI07$GOPRIN == 1, "Trabajadores industriales, artesanos y ayudantes",
+                         ifelse(MTI07$GOPRIN == 2, "Comerciantes y empleados de comercios establecidos", 
+                                ifelse(MTI07$GOPRIN == 3, "Vendedores ambulantes y trabajadores ambulantes en servicios", 
+                                       ifelse(MTI07$GOPRIN == 4, "Trabajadores en servicios domésticos", 
+                                              ifelse(MTI07$GOPRIN == 5, "Trabajadores en servicios personales ", 
+                                                     ifelse(MTI07$GOPRIN == 6, "Trabajadores agropecuarios ", "Otros trabajadores")))))) 
+                                                                   
+                                                                   
+GOcup07 <- data.frame(wtd.table(MTI07$GOPRIN, weights = MTI07$FACTOR))
+
+# Tipo de trabajo 2015
+
+wtd.table (MTI15$G_OCU, weights = MTI15$FAC_MTI)
+
+MTI15$G_OCU <- ifelse(MTI15$G_OCU == 1, "Comerciantes, empleados en ventas y agentes de ventas",
+                       ifelse(MTI15$G_OCU == 2, "Trabajadores en servicios personales y vigilancia", 
+                              ifelse(MTI15$G_OCU == 3, "Trabajadores de apoyo en actividades agrícolas, ganaderas, forestales, caza y pesca", 
+                                     ifelse(MTI15$G_OCU == 4, "Trabajadores de apoyo en la minería, construcción e idustria", 
+                                            ifelse(MTI15$G_OCU == 5, "Trabajadores domésticos, de limpieza o planchadores", 
+                                                   ifelse(MTI15$G_OCU == 6, "Vendedores ambulantes", 
+                                                          ifelse(MTI15$G_OCU == 7,"Otros trabajadores en actividades elementales y de apoyo", "Otros trabajadores")))))))
+
+
+GOcup15 <- data.frame(wtd.table(MTI15$G_OCU, weights = MTI15$FAC_MTI))
+
+############################################################################################################
+
+### Posición Ocupacional 2007
+
+#wtd.table (MTI07$POS, weights = MTI07$FACTOR)
+
+MTI07$POS <- as.character(as.numeric(MTI07$POS))
+
+MTI07$POS <- ifelse(MTI07$POS == 1, "Trabajadores subordinados y remunerados",
+                        ifelse(MTI07$POS == 2, "Trabajadores por cuenta propia", 
+                               ifelse(MTI07$POS == 3, "Trabajadores no remunerados", "Otros trabajadores")))
+
+PosOcu07 <- data.frame(wtd.table(MTI07$POS, weights = MTI07$FACTOR))
+
+### Posición Ocupacional 2015
+
+#wtd.table (MTI15$POS_OCU, weights = MTI15$FAC_MTI)
+
+MTI15$POS_OCU <- ifelse(MTI15$POS_OCU == 1, "Trabajadores subordinados y remunerados",
+                    ifelse(MTI15$POS_OCU == 2, "Empleadores", 
+                           ifelse(MTI15$POS_OCU == 3, "Trabajadores por cuenta propia", "Trabajadores sin pago")))
+
+PosOcu15 <- data.frame(wtd.table(MTI15$POS_OCU, weights = MTI15$FAC_MTI))
+
+############################################################################################################
+
+# Accidentes 2007
+
+#wtd.table (MTI07$CON_ACC, weights = MTI07$FACTOR)
+
+MTI07$CON_ACC <- as.character(as.numeric(MTI07$CON_ACC))
+
+MTI07$CON_ACC <- ifelse(MTI07$CON_ACC == 1, "Requirió atención médica",
+                    ifelse(MTI07$CON_ACC == 2, "No requirió atención médica ","No ha tenido accidente, lesión o enfermedad"))
+
+Acc07 <- data.frame(wtd.table(MTI07$CON_ACC, weights = MTI07$FACTOR))
+
+# Accidentes 2015
